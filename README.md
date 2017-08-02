@@ -55,7 +55,7 @@ Status: 200 OK
       "director": "Mike Nichols",
       "rating": "10"
     },
-    ...
+    "...": "..."
   ]
 }
 ```
