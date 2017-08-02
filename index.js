@@ -2,12 +2,11 @@ const { send } = require('micro');
 const qs = require('querystring');
 const url = require('url');
 
-const extractMovies = require('./lib/extract-movies');
+const extract = require('./lib/extract');
 
 module.exports = async (req, res) => {
   const query = qs.parse(url.parse(req.url).query);
-
-  extractMovies(query.username)
+  extract(query.username, query.category)
     .then(data => {
       send(res, 200, data);
     })
