@@ -33,27 +33,27 @@ Status: 200 OK
 ---
 
 {
-  username: "mlcdf",
-  category: "films",
-  stats: {
-    watchlisted: 0,
-    rated: 0,
-    finished: 0
+  "username": "mlcdf",
+  "category": "films",
+  "stats": {
+    "watchlisted": 0,
+    "rated": 0,
+    "finished": 0
   },
-  collection: [
+  "collection": [
     {
-      frenchTitle: "La vie est belle",
-      originalTitle: "It's a Wonderful Life",
-      year: 1946,
-      director: "Frank Capra",
-      rating: "10"
+      "frenchTitle": "La vie est belle",
+      "originalTitle": "It's a Wonderful Life",
+      "year": 1946,
+      "director": "Frank Capra",
+      "rating": "10"
     },
     {
-      frenchTitle: "Le Lauréat",
-      originalTitle: "The Graduate",
-      year: 1967,
-      director: "Mike Nichols",
-      rating: "10"
+      "frenchTitle": "Le Lauréat",
+      "originalTitle": "The Graduate",
+      "year": 1967,
+      "director": "Mike Nichols",
+      "rating": "10"
     },
     ...
   ]
