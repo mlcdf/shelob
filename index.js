@@ -21,7 +21,7 @@ const index = async (req, res) => {
       }
     })
     .catch(() => {
-      send(res, 500, { error: 'Something happened' });
+      send(res, 500, { message: 'Something happened' });
     });
 };
 const notFound = (req, res) => send(res, 404, { message: 'Not found' });
