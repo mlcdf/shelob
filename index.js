@@ -1,16 +1,21 @@
 const { send } = require('micro');
-const qs = require('querystring');
+const { router, get } = require('microrouter');
 const url = require('url');
 
 const extract = require('./lib/extract');
 
-module.exports = async (req, res) => {
-  const query = qs.parse(url.parse(req.url).query);
-  extract(query.username, query.category)
+const index = async (req, res) => {
+  await extract(req.params.username, req.params.category)
     .then(data => {
       send(res, 200, data);
     })
     .catch(() => {
-      send(res, 500, { error: 'Something happened.' });
+      send(res, 500, { error: 'Something happened' });
     });
 };
+const notFound = (req, res) => send(res, 404, { message: 'Not found' });
+
+module.exports = router(
+  get('/:username/:category', index),
+  get('/*', notFound)
+);
