@@ -60,25 +60,13 @@ Status: 200 OK
 }
 ```
 
-## Dev
+## Contribute
 
-Clone the repository
-```console
-git clone https://github.com/shelob.git
-cd shelob
-```
+1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device.
+2. Install dependencies using npm `npm install` or Yarn: `yarn install`.
+3. Make the necessary changes.
+4. Send a pull request.
 
-Install the dependencies
-```console
-yarn install # `npm install` works fine too
-```
-
-Launch the server
-```console
-npm start
-```
-
-Now, open your browser at `localhost:3000/?username=foo` (and replace `foo` by any username).
 
 ## License
 
