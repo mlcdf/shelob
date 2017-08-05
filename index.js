@@ -1,32 +1,44 @@
+const fs = require('fs');
+
 const { send } = require('micro');
 const { router, get } = require('microrouter');
-const querystring = require('querystring');
-const stringifyObject = require('stringify-object');
-const url = require('url');
-
 const extract = require('./lib/extract');
 
-const index = async (req, res) => {
-  const query = querystring.parse(url.parse(req.url).query);
+const index = (req, res) => {
+  send(res, 300, {
+    name: 'Shelob',
+    description: "Extract your data (or someone else's) from senscritique.com",
+    usage: 'GET /:username/:category',
+    docs: 'https://github.com/mlcdf/shelob#shelob',
+    src: 'https://github.com/mlcdf/shelob',
+    author: {
+      name: 'Maxime Le Conte des Floris',
+      email: 'hello@mlcdf.com',
+      url: 'https://mlcdf.com'
+    }
+  });
+};
+
+const api = async (req, res) => {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
   await extract(req.params.username, req.params.category)
     .then(data => {
-      if (query.pretty === 'true') {
-        const pretty = stringifyObject(data, {
-          indent: '  ',
-          singleQuotes: false
-        });
-        send(res, 200, pretty);
+      if (req.query.pretty === 'true') {
+        send(res, 200, JSON.stringify(data, null, '  '));
       } else {
         send(res, 200, data);
       }
     })
-    .catch(() => {
+    .catch(e => {
+      console.log(e);
       send(res, 500, { message: 'Something happened' });
     });
 };
+
 const notFound = (req, res) => send(res, 404, { message: 'Not found' });
 
 module.exports = router(
-  get('/:username/:category', index),
+  get('/:username/:category', api),
+  get('/', index),
   get('/*', notFound)
 );
