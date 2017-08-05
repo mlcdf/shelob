@@ -8,7 +8,7 @@
 
 All API access is over HTTPS, and accessed from https://shelob.glitch.me. All data is sent and received as JSON.
 
-### Get user rating
+### Get user ratings by category
 
 ```
 GET /:username/:category
