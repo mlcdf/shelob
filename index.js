@@ -11,7 +11,7 @@ const setHeaders = handler => (req, res) => {
 };
 
 const index = (req, res) => {
-  send(res, 300, {
+  send(res, 200, {
     name: 'Shelob',
     description: "Extract your data (or someone else's) from senscritique.com",
     usage: 'GET /:username/:category',
