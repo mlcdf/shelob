@@ -29,7 +29,7 @@ Example:
 curl -i 'https://shelob.glitch.me/mlcdf/films'
 ```
 
-By default, the ouput is pretty printed. If you want the raw ouput, without any formatting, simply add `?pretty=false` at the end of the request:
+By default, the output is pretty printed. If you want the raw ouput, without any formatting, simply add `?pretty=false` at the end of the request:
 
 ```console
 curl -i 'https://shelob.glitch.me/mlcdf/films?pretty=false'
