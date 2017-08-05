@@ -16,14 +16,14 @@ curl -i 'https://shelob.mlcdf.com/mlcdf/films'
 
 ### Parameter
 
-| Field  | Type    | Description              |
-| ------ | ------- | ------------------------ |
-| pretty | Boolean | Pretty print the output. |
+| Field  | Type    | Description              | Default value |
+| ------ | ------- | ------------------------ | ------------- |
+| pretty | Boolean | Pretty print the output. | true          |
 
 Example:
 
 ```console
-curl -i 'https://shelob.mlcdf.com/mlcdf/films?pretty=true'
+curl -i 'https://shelob.mlcdf.com/mlcdf/films?pretty=false'
 ```
 
 ### Response

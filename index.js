@@ -23,10 +23,10 @@ const api = async (req, res) => {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
   await extract(req.params.username, req.params.category)
     .then(data => {
-      if (req.query.pretty === 'true') {
-        send(res, 200, JSON.stringify(data, null, '  '));
-      } else {
+      if (req.query.pretty === 'false') {
         send(res, 200, data);
+      } else {
+        send(res, 200, JSON.stringify(data, null, '  '));
       }
     })
     .catch(e => {
