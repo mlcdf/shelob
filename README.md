@@ -2,11 +2,11 @@
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-> Shelob crawls senscritique.com and extract your data (or someone else's).
+> Shelob crawls https://senscritique.com and extract your data (or someone else's).
 
 ## Usage
 
-All API access is over HTTPS, and accessed from the https://shelob.glitch.me. All data is sent and received as JSON.
+All API access is over HTTPS, and accessed from https://shelob.glitch.me. All data is sent and received as JSON.
 
 ### Get user rating
 
@@ -39,7 +39,7 @@ curl -i 'https://shelob.glitch.me/mlcdf/films?pretty=false'
 
 **200 Success**
 
-```json
+```javascript
 {
   "username": "mlcdf",
   "category": "films",
