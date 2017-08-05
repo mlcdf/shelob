@@ -4,6 +4,12 @@ const { send } = require('micro');
 const { router, get } = require('microrouter');
 const extract = require('./lib/extract');
 
+const setHeaders = handler => (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
+  return handler(req, res);
+};
+
 const index = (req, res) => {
   send(res, 300, {
     name: 'Shelob',
@@ -20,7 +26,6 @@ const index = (req, res) => {
 };
 
 const api = async (req, res) => {
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
   await extract(req.params.username, req.params.category)
     .then(data => {
       if (req.query.pretty === 'false') {
@@ -38,7 +43,7 @@ const api = async (req, res) => {
 const notFound = (req, res) => send(res, 404, { message: 'Not found' });
 
 module.exports = router(
-  get('/:username/:category', api),
-  get('/', index),
-  get('/*', notFound)
+  get('/:username/:category', setHeaders(api)),
+  get('/', setHeaders(index)),
+  get('/*', setHeaders(notFound))
 );
