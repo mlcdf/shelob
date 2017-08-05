@@ -44,7 +44,11 @@ const api = async (req, res) => {
     .catch(err => {
       console.log(err);
       if (err.statusCode != null) {
-        send(res, err.statusCode, pretty({ message: err.message }));
+        send(
+          res,
+          err.statusCode,
+          pretty({ code: err.statusCode, message: err.message })
+        );
       } else {
         send(res, 500, pretty({ message: 'Something happened' }));
       }
