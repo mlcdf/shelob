@@ -1,61 +1,76 @@
 # Shelob
 
-> Shelob is an API allowing you to extract your data (or someone else's) from SensCritique.
+[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
-## API
+> Shelob crawls senscritique.com and extract your data (or someone else's).
 
-**GET**
+## Usage
 
-```/:username/:category```
+All API access is over HTTPS, and accessed from the https://shelob.glitch.me. All data is sent and received as JSON.
+
+### Get user rating
+
+```
+GET /:username/:category
+```
+
+Note: The field `category` must be one of the following value:
+- `films`
+- `series`
+- `jeuxvideo`
+- `albums`
+- `morceaux`
+- `bd`
+- `livres`
 
 Example:
 
 ```console
-curl -i 'https://shelob.mlcdf.com/mlcdf/films'
+curl -i 'https://shelob.glitch.me/mlcdf/films'
 ```
 
-### Parameter
-
-| Field  | Type    | Description              | Default value |
-| ------ | ------- | ------------------------ | ------------- |
-| pretty | Boolean | Pretty print the output. | true          |
-
-Example:
+By default, the ouput is pretty printed. If you want the raw ouput, without any formatting, simply add `?pretty=false` at the end of the request:
 
 ```console
-curl -i 'https://shelob.mlcdf.com/mlcdf/films?pretty=false'
+curl -i 'https://shelob.glitch.me/mlcdf/films?pretty=false'
 ```
 
-### Response
+#### Response
+
+**200 Success**
 
 ```json
-Status: 200 OK
----
-
 {
   "username": "mlcdf",
   "category": "films",
   "stats": {
-    "watchlisted": 0,
-    "rated": 0,
-    "finished": 0
+    "watchlisted": 986,
+    "rated": 683,
+    "finished": 689
   },
   "collection": [
     {
-      "frenchTitle": "La vie est belle",
-      "originalTitle": "It's a Wonderful Life",
-      "year": 1946,
-      "director": "Frank Capra",
-      "rating": "10"
+      "frenchTitle": "Le Seigneur des Anneaux : La Communauté de l'anneau",
+      "originalTitle": "The Lord of the Rings: The Fellowship of the Ring",
+      "year": 2001,
+      "director": "Peter Jackson",
+      "rating": 9
     },
     {
       "frenchTitle": "Le Lauréat",
       "originalTitle": "The Graduate",
       "year": 1967,
       "director": "Mike Nichols",
-      "rating": "10"
+      "rating": 10
     },
-    "...": "..."
+    {
+      "frenchTitle": "La Jetée",
+      "originalTitle": "La Jetée",
+      "year": 1962,
+      "director": "Chris Marker",
+      "rating": 9
+    },
+    // 680 films ommited
   ]
 }
 ```
