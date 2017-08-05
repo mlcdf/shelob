@@ -41,9 +41,13 @@ const api = async (req, res) => {
         send(res, 200, pretty(data));
       }
     })
-    .catch(e => {
-      console.log(e);
-      send(res, 500, pretty({ message: 'Something happened' }));
+    .catch(err => {
+      console.log(err);
+      if (err.statusCode != null) {
+        send(res, err.statusCode, pretty({ message: err.message }));
+      } else {
+        send(res, 500, pretty({ message: 'Something happened' }));
+      }
     });
 };
 
