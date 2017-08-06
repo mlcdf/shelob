@@ -1,7 +1,8 @@
 {
   "main": "index.js",
   "scripts": {
-    "start": "micro",
+    "start": "micro -p ${PORT:-3000}",
+    "dev": "micro-dev -p ${PORT:-3000}",
     "format": "prettier '**/*.js' --write --single-quote",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,10 +13,11 @@
     "bluebird": "^3.5.0",
     "cheerio": "^1.0.0-rc.2",
     "got": "^7.1.0",
-    "micro": "^7.3.3",
+    "micro": "^8.0.1",
     "microrouter": "^2.2.1"
   },
   "devDependencies": {
+    "micro-dev": "^1.1.1",
     "prettier": "^1.5.3"
   }
 }
