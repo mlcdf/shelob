@@ -3,7 +3,7 @@
   "scripts": {
     "start": "micro -p ${PORT:-3000}",
     "dev": "micro-dev -p ${PORT:-3000}",
-    "format": "prettier '**/*.js' --write --single-quote",
+    "format": "prettier *.js --write --single-quote",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {

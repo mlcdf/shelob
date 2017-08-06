@@ -2,12 +2,11 @@ const bluebird = require('bluebird');
 const cheerio = require('cheerio');
 const got = require('got');
 
-const models = require('./models');
-
 async function extractStats(username, category) {
+  console.log(`${username}/${category}`);
   const url = `https://www.senscritique.com/${username}/collection/rating/${category}/all/all/all/all/all/all/all/page-1`;
-
   let response;
+
   try {
     response = await got(url);
   } catch (err) {
@@ -49,13 +48,9 @@ async function extractStats(username, category) {
 
 module.exports = async function(username, category) {
   const collection = [];
-
   const stats = await extractStats(username, category);
   const pages = Math.ceil(stats['rated'] / 18);
   const indexes = Array.from({ length: pages }, (v, k) => k + 1);
-
-  const model = models[models.categoryToModels[category]];
-  const keys = Object.keys(model);
 
   return await bluebird
     .map(indexes, async function(index, callback) {
@@ -66,37 +61,47 @@ module.exports = async function(username, category) {
       const $ = cheerio.load(response.body);
 
       $('.elco-collection-item').each(function() {
-        const json = Object.create(model);
-        let index = 0;
+        const creativeWork = Object.create({});
 
-        json[keys[index++]] = $(this).find('.elco-title a').text().trim();
+        creativeWork.frenchTitle = $(this).find('.elco-title a').text().trim();
 
         if (!['morceaux', 'albums'].includes(category)) {
-          json[keys[index++]] =
-            $(this).find('.elco-original-title').text().trim() !== ''
-              ? $(this).find('.elco-original-title').text().trim()
-              : json[keys[0]];
+          const originalTitle = $(this)
+            .find('.elco-original-title')
+            .text()
+            .trim();
+          creativeWork.originalTitle =
+            originalTitle !== '' ? originalTitle : creativeWork.frenchTitle;
         }
 
-        json[keys[index++]] = parseInt(
+        creativeWork.year = parseInt(
           $(this).find('.elco-date').text().trim().slice(1, -1)
         );
 
-        json[keys[index++]] = $(this)
-          .find('.elco-product-detail a.elco-baseline-a')
-          .text()
-          .trim();
+        const creators = [];
+        $(this).find('.elco-product-detail a.elco-baseline-a').each(function() {
+          creators.push($(this).text().trim());
+        });
+        creativeWork[creatorLabel(category)] = creators;
 
-        json[keys[index++]] = parseInt(
-          $(this)
-            .find('.elco-collection-rating.user > a > div > span')
-            .text()
-            .trim()
+        creativeWork.rating = parseInt(
+          $(this).find('.elco-collection-rating.user > a > div > span').text()
         );
-        collection.push(json);
+
+        collection.push(creativeWork);
       });
     })
     .then(() => {
       return { username, category, stats, collection };
     });
 };
+
+function creatorLabel(category = '') {
+  if (category == 'films') {
+    return 'directors';
+  }
+  if (category === 'bd') {
+    return 'illustrators';
+  }
+  return 'creators';
+}

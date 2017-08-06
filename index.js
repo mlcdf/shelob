@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const { send } = require('micro');
 const { router, get } = require('microrouter');
-const extract = require('./lib/extract');
+const extract = require('./extract');
 
 const setHeaders = handler => (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
