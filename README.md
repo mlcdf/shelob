@@ -42,45 +42,49 @@ curl -i 'https://shelob.glitch.me/mlcdf/films?pretty=false'
 ```javascript
 {
   "username": "mlcdf",
-  "category": "films",
+  "category": "series",
   "stats": {
-    "watchlisted": 986,
-    "rated": 683,
-    "finished": 689
+    "watchlisted": 260,
+    "rated": 437,
+    "finished": 438
   },
   "collection": [
     {
-      "frenchTitle": "Le Seigneur des Anneaux : La Communauté de l'anneau",
-      "originalTitle": "The Lord of the Rings: The Fellowship of the Ring",
-      "year": 2001,
-      "directors": [
-        "Peter Jackson"
-      ],
-      "rating": 9
-    },
-    {
-      "frenchTitle": "Matrix",
-      "originalTitle": "The Matrix",
-      "year": 1999,
-      "directors": [
-        "Lilly Wachowski",
-        "Lana Wachowski"
+      "frenchTitle": "The Americans",
+      "originalTitle": "The Americans",
+      "year": 2013,
+      "creators": [
+        "Joseph Weisberg"
       ],
       "rating": 10
     },
     {
-      "frenchTitle": "La Jetée",
-      "originalTitle": "La Jetée",
-      "year": 1962,
-      "directors": [
-        "Chris Marker"
+      "frenchTitle": "Batman, la Série Animée",
+      "originalTitle": "Batman : The Animated Series",
+      "year": 1992,
+      "creators": [
+        "Bruce Timm",
+        "Eric Radomski"
       ],
-      "rating": 9
+      "rating": 8
     },
-    // 680 movies ommited
+    {
+      "frenchTitle": "The Leftovers",
+      "originalTitle": "The Leftovers",
+      "year": 2014,
+      "creators": [
+        "Damon Lindelof",
+        "Tom Perrotta"
+      ],
+      "rating": 10
+    },
+    // 434 TV shows ommited
   ]
 }
 ```
+
+**Note**
+- If you exports comics (`bd`) or movies (`films`), the field `creators` will be named respectively `illustrators` or `directors`.
 
 ## Contribute
 
