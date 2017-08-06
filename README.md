@@ -53,24 +53,31 @@ curl -i 'https://shelob.glitch.me/mlcdf/films?pretty=false'
       "frenchTitle": "Le Seigneur des Anneaux : La Communauté de l'anneau",
       "originalTitle": "The Lord of the Rings: The Fellowship of the Ring",
       "year": 2001,
-      "director": "Peter Jackson",
+      "directors": [
+        "Peter Jackson"
+      ],
       "rating": 9
     },
     {
-      "frenchTitle": "Le Lauréat",
-      "originalTitle": "The Graduate",
-      "year": 1967,
-      "director": "Mike Nichols",
+      "frenchTitle": "Matrix",
+      "originalTitle": "The Matrix",
+      "year": 1999,
+      "directors": [
+        "Lilly Wachowski",
+        "Lana Wachowski"
+      ],
       "rating": 10
     },
     {
       "frenchTitle": "La Jetée",
       "originalTitle": "La Jetée",
       "year": 1962,
-      "director": "Chris Marker",
+      "directors": [
+        "Chris Marker"
+      ],
       "rating": 9
     },
-    // 680 films ommited
+    // 680 movies ommited
   ]
 }
 ```
