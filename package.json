@@ -4,6 +4,7 @@
     "start": "micro -p ${PORT:-3000}",
     "dev": "micro-dev -p ${PORT:-3000}",
     "format": "prettier *.js --write --single-quote",
+    "lint": "eslint --fix **.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
@@ -17,6 +18,7 @@
     "microrouter": "^2.2.1"
   },
   "devDependencies": {
+    "eslint": "^4.4.1",
     "micro-dev": "^1.1.1",
     "prettier": "^1.5.3"
   }

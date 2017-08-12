@@ -2,40 +2,19 @@ const bluebird = require('bluebird');
 const cheerio = require('cheerio');
 const got = require('got');
 
-module.exports = async function(username, category, filter) {
-  const collection = [];
-
-  // Crawl the first page
-  const url = `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-1`;
-  let response;
-
-  try {
-    response = await got(url);
-  } catch (err) {
-    err.message = 'SensCritique is unavailable';
-    throw err;
+/**
+ * Figure out which label to use for the field `creators`
+ * @param {String} category
+ */
+function creatorLabel(category) {
+  if (category === 'films') {
+    return 'directors';
   }
-
-  // Then extract data from the first page
-  collection.push(...extractItems(response.body, category, filter));
-
-  const nbOfPages = Math.ceil(collectionSize(response.body, filter) / 18); // 18 being the number of item per page
-
-  if (nbOfPages >= 1) {
-    const indexes = Array.from({ length: nbOfPages }, (v, k) => k + 2); // Build a [] from 2 => nbOfPages
-
-    await bluebird.map(indexes, async function(index, callback) {
-      const url =
-        `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-` +
-        index;
-      const response = await got(url);
-      const items = extractItems(response.body, category, filter);
-      collection.push(...items);
-    });
+  if (category === 'bd') {
+    return 'illustrators';
   }
-
-  return collection;
-};
+  return 'creators';
+}
 
 function collectionSize(html, filter) {
   const $ = cheerio.load(html);
@@ -95,16 +74,37 @@ function extractItems(html, category, filter) {
   return items;
 }
 
-/**
- * Figure out which label to use for the field `creators`
- * @param {String} category
- */
-function creatorLabel(category) {
-  if (category === 'films') {
-    return 'directors';
+module.exports = async function(username, category, filter) {
+  const collection = [];
+
+  const url = `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-`;
+
+  let response;
+
+  // Crawl the first page
+  try {
+    response = await got(url + '1');
+  } catch (err) {
+    err.message = 'SensCritique is unavailable';
+    throw err;
   }
-  if (category === 'bd') {
-    return 'illustrators';
+
+  // Then extract data from the first page
+  collection.push(...extractItems(response.body, category, filter));
+
+  // 18 being the number of item per page
+  const nbOfPages = Math.ceil(collectionSize(response.body, filter) / 18);
+
+  if (nbOfPages >= 1) {
+    // Build a [] from 2 => nbOfPages
+    const indexes = Array.from({ length: nbOfPages }, (v, k) => k + 2);
+
+    await bluebird.map(indexes, async index => {
+      response = await got(url + index);
+      const items = extractItems(response.body, category, filter);
+      collection.push(...items);
+    });
   }
-  return 'creators';
-}
+
+  return collection;
+};

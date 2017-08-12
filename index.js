@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 const { send } = require('micro');
 const { router, get } = require('microrouter');
 const extract = require('./extract');
