@@ -3,7 +3,6 @@ const fs = require('fs');
 const { send } = require('micro');
 const { router, get } = require('microrouter');
 const extract = require('./extract');
-const findIMDBId = require('./find-imdb-id');
 
 /**
  * Act as a decorator to add headers a request handler
