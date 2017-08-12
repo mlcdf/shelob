@@ -10,7 +10,7 @@ All API access is over HTTPS, and accessed from https://shelob.glitch.me. All da
 
 ### Collection of a user by category
 
-> List of works (restrained to the specified category) marked by the user as rated or done.
+> List of works (restrained to the specified category) marked by the user as **rated or done**.
 
 ```
 GET /:username/:category/done
@@ -81,7 +81,7 @@ curl -i 'https://shelob.glitch.me/mlcdf/series/done?pretty=false'
 
 ### Wishlist of a user by category
 
-> List of works (restrained to the specified category) marked by the user as wish.
+> List of works (restrained to the specified category) marked by the user as **wish**.
 
 ```
 GET /:username/:category/wish
