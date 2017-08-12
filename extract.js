@@ -34,7 +34,7 @@ module.exports = async function(username, category, filter) {
     });
   }
 
-  return { collection };
+  return collection;
 };
 
 function collectionSize(html, filter) {
