@@ -76,9 +76,7 @@ function extractItems(html, category, filter) {
 
 module.exports = async function(username, category, filter) {
   const collection = [];
-
   const url = `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-`;
-
   let response;
 
   // Crawl the first page
