@@ -37,12 +37,8 @@ module.exports = async function(username, category, filter) {
   return { collection };
 };
 
-/**
- * Extract some stats on the user's collection
- * @param {String} data
- */
-function collectionSize(data, filter) {
-  const $ = cheerio.load(data);
+function collectionSize(html, filter) {
+  const $ = cheerio.load(html);
 
   let numberOfEntries = parseInt(
     $(`[data-sc-collection-filter=${filter}] span span`)
@@ -60,10 +56,12 @@ function collectionSize(data, filter) {
 
 /**
  * Extract all the items (ie movies, books, ...) from a HTML page
- * @param {String} data
+ * @param {String} html
+ * @param {String} category
+ * @param {String} filter
  */
-function extractItems(data, category, filter) {
-  const $ = cheerio.load(data);
+function extractItems(html, category, filter) {
+  const $ = cheerio.load(html);
   const items = [];
 
   $('.elco-collection-item').each(function() {
