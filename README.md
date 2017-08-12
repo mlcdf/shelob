@@ -8,10 +8,83 @@
 
 All API access is over HTTPS, and accessed from https://shelob.glitch.me. All data is sent and received as JSON.
 
-### Get user ratings by category
+### Collection of a user by category
+
+> List of works (restrained to the specified category) marked by the user as rated or done.
 
 ```
-GET /:username/:category
+GET /:username/:category/done
+```
+
+- `category` must be one of the following value:
+  - `films`
+  - `series`
+  - `jeuxvideo`
+  - `albums`
+  - `morceaux`
+  - `bd`
+  - `livres`
+
+Example:
+
+```console
+curl -i 'https://shelob.glitch.me/mlcdf/series/done'
+```
+
+By default, the output is pretty printed. If you want the raw ouput, without any formatting, simply add `?pretty=false` at the end of the request:
+
+```console
+curl -i 'https://shelob.glitch.me/mlcdf/series/done?pretty=false'
+```
+
+#### Response
+
+**200 Success**
+
+```javascript
+[
+  {
+    "frenchTitle": "The Americans",
+    "originalTitle": "The Americans",
+    "year": 2013,
+    "creators": [
+      "Joseph Weisberg"
+    ],
+    "rating": 10
+  },
+  {
+    "frenchTitle": "Batman, la Série Animée",
+    "originalTitle": "Batman : The Animated Series",
+    "year": 1992,
+    "creators": [
+      "Bruce Timm",
+      "Eric Radomski"
+    ],
+    "rating": 8
+  },
+  {
+    "frenchTitle": "The Leftovers",
+    "originalTitle": "The Leftovers",
+    "year": 2014,
+    "creators": [
+      "Damon Lindelof",
+      "Tom Perrotta"
+    ],
+    "rating": 10
+  },
+  //...
+]
+```
+
+**Note**
+- If you exports comics (`bd`) or movies (`films`), the field `creators` will be named respectively `illustrators` or `directors`.
+
+### Wishlist of a user by category
+
+> List of works (restrained to the specified category) marked by the user as wish.
+
+```
+GET /:username/:category/wish
 ```
 
 Note: The field `category` must be one of the following value:
@@ -26,13 +99,13 @@ Note: The field `category` must be one of the following value:
 Example:
 
 ```console
-curl -i 'https://shelob.glitch.me/mlcdf/films'
+curl -i 'https://shelob.glitch.me/mlcdf/series/wish'
 ```
 
 By default, the output is pretty printed. If you want the raw ouput, without any formatting, simply add `?pretty=false` at the end of the request:
 
 ```console
-curl -i 'https://shelob.glitch.me/mlcdf/films?pretty=false'
+curl -i 'https://shelob.glitch.me/mlcdf/series/wish?pretty=false'
 ```
 
 #### Response
@@ -40,47 +113,27 @@ curl -i 'https://shelob.glitch.me/mlcdf/films?pretty=false'
 **200 Success**
 
 ```javascript
-{
-  "username": "mlcdf",
-  "category": "series",
-  "stats": {
-    "watchlisted": 260,
-    "rated": 437,
-    "finished": 438
+[
+  {
+    frenchTitle: "Atlanta",
+    originalTitle: "Atlanta",
+    year: 2016,
+    creators: ["Donald Glover"]
+  }
+  {
+    frenchTitle: "Mindhunter",
+    originalTitle: "Mindhunter",
+    year: 2017,
+    creators: ["David Fincher"]
   },
-  "collection": [
-    {
-      "frenchTitle": "The Americans",
-      "originalTitle": "The Americans",
-      "year": 2013,
-      "creators": [
-        "Joseph Weisberg"
-      ],
-      "rating": 10
-    },
-    {
-      "frenchTitle": "Batman, la Série Animée",
-      "originalTitle": "Batman : The Animated Series",
-      "year": 1992,
-      "creators": [
-        "Bruce Timm",
-        "Eric Radomski"
-      ],
-      "rating": 8
-    },
-    {
-      "frenchTitle": "The Leftovers",
-      "originalTitle": "The Leftovers",
-      "year": 2014,
-      "creators": [
-        "Damon Lindelof",
-        "Tom Perrotta"
-      ],
-      "rating": 10
-    },
-    // 434 TV shows ommited
-  ]
-}
+  {
+    frenchTitle: "Halt and Catch Fire",
+    originalTitle: "Halt and Catch Fire",
+    year: 2014,
+    creators: ["Christopher Cantwell", "Christopher C. Rogers"]
+  },
+  //...
+]
 ```
 
 **Note**

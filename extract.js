@@ -2,11 +2,11 @@ const bluebird = require('bluebird');
 const cheerio = require('cheerio');
 const got = require('got');
 
-module.exports = async function(username, category) {
+module.exports = async function(username, category, filter) {
   const collection = [];
 
   // Crawl the first page
-  const url = `https://www.senscritique.com/${username}/collection/rating/${category}/all/all/all/all/all/all/all/page-1`;
+  const url = `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-1`;
   let response;
 
   try {
@@ -17,55 +17,52 @@ module.exports = async function(username, category) {
   }
 
   // Then extract data from the first page
-  const stats = extractStats(response.body);
-  collection.push(...extractItems(response.body, category));
+  collection.push(...extractItems(response.body, category, filter));
 
-  const nbOfPages = Math.ceil(stats['rated'] / 18); // 18 being the number of item per page
+  const nbOfPages = Math.ceil(collectionSize(response.body, filter) / 18); // 18 being the number of item per page
 
   if (nbOfPages >= 1) {
     const indexes = Array.from({ length: nbOfPages }, (v, k) => k + 2); // Build a [] from 2 => nbOfPages
 
     await bluebird.map(indexes, async function(index, callback) {
       const url =
-        `https://www.senscritique.com/${username}/collection/rating/${category}/all/all/all/all/all/all/all/page-` +
+        `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-` +
         index;
       const response = await got(url);
-      const items = extractItems(response.body, category);
+      const items = extractItems(response.body, category, filter);
       collection.push(...items);
     });
   }
 
-  return { stats, collection };
+  return { collection };
 };
 
 /**
  * Extract some stats on the user's collection
  * @param {String} data
  */
-function extractStats(data) {
+function collectionSize(data, filter) {
   const $ = cheerio.load(data);
 
-  const stats = {
-    watchlisted: $('[data-sc-collection-filter="wish"] span span'),
-    rated: $('[data-sc-collection-filter="rating"] span span'),
-    finished: $('[data-sc-collection-filter="done"] span span')
-  };
+  let numberOfEntries = parseInt(
+    $(`[data-sc-collection-filter=${filter}] span span`)
+      .text()
+      .trim()
+      .slice(1, -1)
+  );
 
-  for (let key of Object.keys(stats)) {
-    stats[key] = parseInt(stats[key].text().trim().slice(1, -1)); // Remove \t, spaces, and ()
-    if (Object.is(stats[key], NaN)) {
-      stats[key] = 0;
-    }
+  if (Object.is(numberOfEntries, NaN)) {
+    numberOfEntries = 0;
   }
 
-  return stats;
+  return numberOfEntries;
 }
 
 /**
  * Extract all the items (ie movies, books, ...) from a HTML page
  * @param {String} data
  */
-function extractItems(data, category) {
+function extractItems(data, category, filter) {
   const $ = cheerio.load(data);
   const items = [];
 
@@ -88,9 +85,11 @@ function extractItems(data, category) {
     });
     item[creatorLabel(category)] = creators;
 
-    item.rating = parseInt(
-      $(this).find('.elco-collection-rating.user > a > div > span').text()
-    );
+    if (filter === 'done') {
+      item.rating = parseInt(
+        $(this).find('.elco-collection-rating.user > a > div > span').text()
+      );
+    }
 
     items.push(item);
   });
