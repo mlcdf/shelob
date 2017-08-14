@@ -141,7 +141,7 @@ curl -i 'https://shelob.glitch.me/mlcdf/series/wish?pretty=false'
 
 ### Import movies to Letterboxd
 
-## Watched films
+#### Watched films
 
 > List of all the movies you've watched exported in a CSV file
 
@@ -159,7 +159,7 @@ https://shelob.glitch.me/<your_username>/films/done/letterboxd
 A CSV file named `letterboxd-watched_films-export` will be generated and saved in your Downloads folder.
 You can then import it to Letterboxd at the following url: https://letterboxd.com/import/
 
-## Wishlist films
+#### Wishlist films
 
 > List of all the movies you've added to your wishlist exported in a CSV file
 
