@@ -139,6 +139,45 @@ curl -i 'https://shelob.glitch.me/mlcdf/series/wish?pretty=false'
 **Note**
 - If you exports comics (`bd`) or movies (`films`), the field `creators` will be named respectively `illustrators` or `directors`.
 
+### Import movies to Letterboxd
+
+#### Watched films
+
+> List of all the movies you've watched exported in a CSV file
+
+```
+GET /:username/films/done/letterboxd
+```
+
+Example:
+
+Copy/Paste the following URL in your browser
+```
+https://shelob.glitch.me/<your_username>/films/done/letterboxd
+```
+
+A CSV file named `letterboxd-watched_films-export` will be generated and saved in your Downloads folder.
+You can then import it to Letterboxd at the following url: https://letterboxd.com/import/
+
+#### Wishlist films
+
+> List of all the movies you've added to your wishlist exported in a CSV file
+
+```
+GET /:username/films/wish/letterboxd
+```
+
+Example:
+
+Copy/Paste the following URL in your browser
+```
+https://shelob.glitch.me/<your_username>/films/wish/letterboxd
+```
+
+A CSV file named `letterboxd-watchlist-export` will be generated and saved in your Downloads folder.
+You can then import it to Letterboxd at the following url: https://letterboxd.com/watchlist/
+
+
 ## Contribute
 
 1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device.

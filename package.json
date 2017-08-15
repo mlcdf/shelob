@@ -8,12 +8,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": "8.x"
   },
   "dependencies": {
     "bluebird": "^3.5.0",
     "cheerio": "^1.0.0-rc.2",
     "got": "^7.1.0",
+    "json2csv": "^3.11.1",
     "micro": "^8.0.1",
     "microrouter": "^2.2.1"
   },
