@@ -185,6 +185,10 @@ You can then import it to Letterboxd at the following url: https://letterboxd.co
 3. Make the necessary changes.
 4. Send a pull request.
 
+## Contributors :heart:
+
+- [Pierrick TURELIER](https://github.com/PierrickGT)
+
 
 ## License
 
