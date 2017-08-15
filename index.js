@@ -3,7 +3,6 @@ const { router, get } = require('microrouter');
 const { exportLetterboxd } = require('./export');
 const extract = require('./extract');
 
-
 /**
  * Act as a decorator to add headers a request handler
  * @param {*} handler - a request handler
@@ -57,7 +56,6 @@ const api = async (res, username, category, filter, exportWebsite, pretty) => {
       } else {
         send(res, 200, pretty === 'false' ? data : prettify(data));
       }
-
     })
     .catch(err => {
       console.log(err);
@@ -71,7 +69,14 @@ const api = async (res, username, category, filter, exportWebsite, pretty) => {
 
 // GET /:username/:category/:filter/:exportWebsite?:pretty
 const request = (req, res) =>
-  api(res, req.params.username, req.params.category, req.params.filter, req.params.exportWebsite, req.params.pretty);
+  api(
+    res,
+    req.params.username,
+    req.params.category,
+    req.params.filter,
+    req.params.exportWebsite,
+    req.params.pretty
+  );
 
 // GET /*
 const notFound = (req, res) =>
