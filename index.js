@@ -59,11 +59,9 @@ const api = async (res, username, category, filter, exportWebsite, pretty) => {
     })
     .catch(err => {
       console.log(err);
-      const response = {
-        code: err.statusCode ? err.statusCode : 500,
-        message: err.message ? err.message : 'Something happened'
-      };
-      send(res, response.code, prettify(response));
+      const code = err.statusCode ? err.statusCode : 500;
+      const message = err.message ? err.message : 'Something happened';
+      send(res, code, prettify({ message }));
     });
 };
 
@@ -80,7 +78,7 @@ const request = (req, res) =>
 
 // GET /*
 const notFound = (req, res) =>
-  send(res, 404, prettify({ code: 404, message: 'Not found' }));
+  send(res, 404, prettify({ message: 'Not found' }));
 
 module.exports = router(
   get('/', setJsonHeaders(index)),
