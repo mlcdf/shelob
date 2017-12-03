@@ -81,7 +81,7 @@ module.exports = async function(username, category, filter) {
 
   // Crawl the first page
   try {
-    response = await got(url + '1');
+    response = await got(url + '1', { timeout: 20000 });
   } catch (err) {
     err.message = 'SensCritique is unavailable';
     throw err;
@@ -98,7 +98,7 @@ module.exports = async function(username, category, filter) {
     const indexes = Array.from({ length: nbOfPages }, (v, k) => k + 2);
 
     await bluebird.map(indexes, async index => {
-      response = await got(url + index);
+      response = await got(url + index, { timeout: 20000 });
       const items = extractItems(response.body, category, filter);
       collection.push(...items);
     });
