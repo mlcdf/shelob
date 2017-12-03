@@ -88,7 +88,7 @@ module.exports = async function(username, category, filter) {
   }
 
   if (response.statusCode === 301) {
-    const err = new Error('This SensCritique user doesn\'t exist.')
+    const err = new Error("This SensCritique user doesn't exist.");
     err.statusCode = 404;
     throw err;
   }

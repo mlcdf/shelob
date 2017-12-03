@@ -29,7 +29,6 @@ const setCsvHeaders = handler => (req, res) => {
   return handler(req, res);
 };
 
-
 const help = {
   usage: 'GET /:username/:category/:filter',
   documentation: 'https://github.com/mlcdf/shelob#usage'
@@ -39,15 +38,31 @@ const help = {
 const index = (req, res) => send(res, 200, help);
 
 // GET /*
-const notFound = (req, res) => send(res, 404, { message: 'Not found' , usage: help.usage, documentation: help.documentation });
+const notFound = (req, res) =>
+  send(res, 404, {
+    message: 'Not found',
+    usage: help.usage,
+    documentation: help.documentation
+  });
 
 const api = async (res, username, category, filter, exportWebsite) => {
-  if (!['films', 'series', 'bd', 'livres', 'albums', 'morceaux'].includes(category)) {
-    send(res, 400, { message: 'Invalid category parameter. Should be either `films`, `series`, `bd`, `livres`, `albums` or `morceaux`.', documentation: help.documentation })
+  if (
+    !['films', 'series', 'bd', 'livres', 'albums', 'morceaux'].includes(
+      category
+    )
+  ) {
+    send(res, 400, {
+      message:
+        'Invalid category parameter. Should be either `films`, `series`, `bd`, `livres`, `albums` or `morceaux`.',
+      documentation: help.documentation
+    });
   }
 
   if (!['done', 'wish'].includes(filter)) {
-    send(res, 400, { message: 'Invalid filter parameter. Should be either `done` or `filter`.', documentation: help.documentation })
+    send(res, 400, {
+      message: 'Invalid filter parameter. Should be either `done` or `filter`.',
+      documentation: help.documentation
+    });
   }
 
   await extract(username, category, filter)
@@ -76,7 +91,6 @@ const request = (req, res) =>
     req.params.filter,
     req.params.exportWebsite
   );
-
 
 module.exports = router(
   get('/', setJsonHeaders(index)),
