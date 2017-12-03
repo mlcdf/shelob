@@ -48,6 +48,14 @@ const about = {
 const index = (req, res) => send(res, 200, prettify(about));
 
 const api = async (res, username, category, filter, exportWebsite, pretty) => {
+  if (!['films', 'series', 'bd', 'livres', 'albums', 'morceaux'].includes(category)) {
+    send(res, 400, { message: 'Invalid category parameter', documentation: 'https://github.com/mlcdf/shelob#usage' })
+  }
+
+  if (!['done', 'wish'].includes(filter)) {
+    send(res, 400, { message: 'Invalid filter parameter', documentation: 'https://github.com/mlcdf/shelob#usage' })
+  }
+
   await extract(username, category, filter)
     .then(data => {
       if (exportWebsite === 'letterboxd') {
