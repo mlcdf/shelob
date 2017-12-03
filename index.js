@@ -43,11 +43,11 @@ const notFound = (req, res) => send(res, 404, { message: 'Not found' , usage: he
 
 const api = async (res, username, category, filter, exportWebsite) => {
   if (!['films', 'series', 'bd', 'livres', 'albums', 'morceaux'].includes(category)) {
-    send(res, 400, { message: 'Invalid category parameter', documentation: help.documentation })
+    send(res, 400, { message: 'Invalid category parameter. Should be either `films`, `series`, `bd`, `livres`, `albums` or `morceaux`.', documentation: help.documentation })
   }
 
   if (!['done', 'wish'].includes(filter)) {
-    send(res, 400, { message: 'Invalid filter parameter', documentation: help.documentation })
+    send(res, 400, { message: 'Invalid filter parameter. Should be either `done` or `filter`.', documentation: help.documentation })
   }
 
   await extract(username, category, filter)
