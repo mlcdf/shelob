@@ -30,29 +30,24 @@ const setCsvHeaders = handler => (req, res) => {
 };
 
 
-const about = {
-  name: 'Shelob',
-  description: "Extract your data (or someone else's) from senscritique.com",
+const help = {
   usage: 'GET /:username/:category/:filter',
-  docs: 'https://github.com/mlcdf/shelob#shelob',
-  src: 'https://github.com/mlcdf/shelob',
-  author: {
-    name: 'Maxime Le Conte des Floris',
-    email: 'hello@mlcdf.com',
-    url: 'https://mlcdf.com'
-  }
+  documentation: 'https://github.com/mlcdf/shelob#usage'
 };
 
 // GET /
-const index = (req, res) => send(res, 200, about);
+const index = (req, res) => send(res, 200, help);
+
+// GET /*
+const notFound = (req, res) => send(res, 404, { message: 'Not found' , usage: help.usage, documentation: help.documentation });
 
 const api = async (res, username, category, filter, exportWebsite) => {
   if (!['films', 'series', 'bd', 'livres', 'albums', 'morceaux'].includes(category)) {
-    send(res, 400, { message: 'Invalid category parameter', documentation: 'https://github.com/mlcdf/shelob#usage' })
+    send(res, 400, { message: 'Invalid category parameter', documentation: help.documentation })
   }
 
   if (!['done', 'wish'].includes(filter)) {
-    send(res, 400, { message: 'Invalid filter parameter', documentation: 'https://github.com/mlcdf/shelob#usage' })
+    send(res, 400, { message: 'Invalid filter parameter', documentation: help.documentation })
   }
 
   await extract(username, category, filter)
@@ -82,8 +77,6 @@ const request = (req, res) =>
     req.params.exportWebsite
   );
 
-// GET /*
-const notFound = (req, res) => send(res, 404, { message: 'Not found' });
 
 module.exports = router(
   get('/', setJsonHeaders(index)),
