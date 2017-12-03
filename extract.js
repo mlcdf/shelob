@@ -87,6 +87,12 @@ module.exports = async function(username, category, filter) {
     throw err;
   }
 
+  if (response.statusCode === 301) {
+    const err = new Error('This SensCritique user doesn\'t exist.')
+    err.statusCode = 404;
+    throw err;
+  }
+
   // Then extract data from the first page
   collection.push(...extractItems(response.body, category, filter));
 
