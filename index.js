@@ -29,7 +29,6 @@ const setCsvHeaders = handler => (req, res) => {
   return handler(req, res);
 };
 
-const prettify = object => JSON.stringify(object, null, '  ');
 
 const about = {
   name: 'Shelob',
@@ -45,9 +44,9 @@ const about = {
 };
 
 // GET /
-const index = (req, res) => send(res, 200, prettify(about));
+const index = (req, res) => send(res, 200, about);
 
-const api = async (res, username, category, filter, exportWebsite, pretty) => {
+const api = async (res, username, category, filter, exportWebsite) => {
   if (!['films', 'series', 'bd', 'livres', 'albums', 'morceaux'].includes(category)) {
     send(res, 400, { message: 'Invalid category parameter', documentation: 'https://github.com/mlcdf/shelob#usage' })
   }
@@ -62,31 +61,29 @@ const api = async (res, username, category, filter, exportWebsite, pretty) => {
         data = exportLetterboxd(data, filter);
         send(res, 200, data);
       } else {
-        send(res, 200, pretty === 'false' ? data : prettify(data));
+        send(res, 200, data);
       }
     })
     .catch(err => {
       console.log(err);
       const code = err.statusCode ? err.statusCode : 500;
       const message = err.message ? err.message : 'Something happened';
-      send(res, code, prettify({ message }));
+      send(res, code, { message });
     });
 };
 
-// GET /:username/:category/:filter/:exportWebsite?:pretty
+// GET /:username/:category/:filter/:exportWebsite?
 const request = (req, res) =>
   api(
     res,
     req.params.username,
     req.params.category,
     req.params.filter,
-    req.params.exportWebsite,
-    req.params.pretty
+    req.params.exportWebsite
   );
 
 // GET /*
-const notFound = (req, res) =>
-  send(res, 404, prettify({ message: 'Not found' }));
+const notFound = (req, res) => send(res, 404, { message: 'Not found' });
 
 module.exports = router(
   get('/', setJsonHeaders(index)),
