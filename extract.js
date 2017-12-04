@@ -2,6 +2,8 @@ const bluebird = require('bluebird');
 const cheerio = require('cheerio');
 const got = require('got');
 
+const { AppError } = require('./errors');
+
 /**
  * Figure out which label to use for the field `creators`
  * @param {String} category
@@ -74,7 +76,7 @@ function extractItems(html, category, filter) {
   return items;
 }
 
-module.exports = async function(username, category, filter) {
+async function extract(username, category, filter) {
   const collection = [];
   const url = `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-`;
   let response;
@@ -87,10 +89,9 @@ module.exports = async function(username, category, filter) {
     throw err;
   }
 
+  // S'il y a une redirection vers la page d'accueil de SC, c'est que l'utilisateur n'existe pas
   if (response.statusCode === 301) {
-    const err = new Error("This SensCritique user doesn't exist.");
-    err.statusCode = 404;
-    throw err;
+    throw new AppError(404, "This SensCritique user doesn't exist.");
   }
 
   // Then extract data from the first page
@@ -111,4 +112,8 @@ module.exports = async function(username, category, filter) {
   }
 
   return collection;
+}
+
+module.exports = {
+  extract
 };
