@@ -6,7 +6,7 @@
 
 ## Usage
 
-All API access is over HTTPS, and accessed from https://shelob.glitch.me. All data is sent and received as JSON.
+All API access is over HTTPS, and accessed from https://shelob.glitch.me.
 
 ### Collection of a user by category
 
