@@ -31,12 +31,6 @@ Example:
 curl -i 'https://shelob.glitch.me/mlcdf/series/done'
 ```
 
-By default, the output is pretty printed. If you want the raw ouput, without any formatting, simply add `?pretty=false` at the end of the request:
-
-```console
-curl -i 'https://shelob.glitch.me/mlcdf/series/done?pretty=false'
-```
-
 #### Response
 
 **200 Success**
@@ -100,12 +94,6 @@ Example:
 
 ```console
 curl -i 'https://shelob.glitch.me/mlcdf/series/wish'
-```
-
-By default, the output is pretty printed. If you want the raw ouput, without any formatting, simply add `?pretty=false` at the end of the request:
-
-```console
-curl -i 'https://shelob.glitch.me/mlcdf/series/wish?pretty=false'
 ```
 
 #### Response
