@@ -51,15 +51,18 @@ const validateParams = req => {
 };
 
 // GET /
-const index = (req, res) => send(res, 200, help);
+const index = (req, res) => {
+  send(res, 200, help);
+};
 
 // GET /*
-const notFound = (req, res) =>
+const notFound = (req, res) => {
   send(res, 404, {
     message: 'Not found',
     usage: help.usage,
     documentation: help.documentation
   });
+};
 
 // GET /:username/:category/:filter/:exportWebsite?
 const api = async (req, res) => {
@@ -71,8 +74,6 @@ const api = async (req, res) => {
       documentation: help.documentation
     });
   }
-
-  res.setHeader('Access-Control-Allow-Origin', '*');
 
   await extract(req.params.username, req.params.category, req.params.filter)
     .then(data => {
@@ -88,15 +89,25 @@ const api = async (req, res) => {
       }
       send(res, 200, data);
     })
-    .catch(err => {
-      const code = err.statusCode ? err.statusCode : 500;
-      const message = err.message ? err.message : 'Something happened';
-      send(res, code, { message });
+    .catch(() => {
+      throw new AppError();
     });
 };
 
+const decorateWithHeaders = handler => (req, res) => {
+  const referer = req.headers['referer'];
+
+  if (!referer || referer === '') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  } else {
+    res.setHeader('Access-Control-Allow-Origin', referer);
+  }
+
+  return handler(req, res);
+};
+
 module.exports = router(
-  get('/', index),
-  get('/:username/:category/:filter', api),
-  get('/*', notFound)
+  get('/', decorateWithHeaders(index)),
+  get('/:username/:category/:filter', decorateWithHeaders(api)),
+  get('/*', decorateWithHeaders(notFound))
 );
