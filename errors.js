@@ -1,5 +1,5 @@
 /**
- * This custom Error type makes it easier to create Error
+ * Helper class to easily create Error object
  */
 class AppError extends Error {
   constructor(statusCode = 500, message = 'Something happened') {

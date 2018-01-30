@@ -100,7 +100,7 @@ async function extract(username, category, filter) {
   // 18 being the number of item per page
   const nbOfPages = Math.ceil(collectionSize(response.body, filter) / 18);
 
-  if (nbOfPages >= 1) {
+  if (nbOfPages > 1) {
     // Build a [] from 2 => nbOfPages
     const indexes = Array.from({ length: nbOfPages }, (v, k) => k + 2);
 
