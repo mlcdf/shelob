@@ -144,7 +144,7 @@ Copy/Paste the following URL in your browser
 https://shelob.glitch.me/<your_username>/films/done?exportWebsite=letterboxd
 ```
 
-A CSV file named `letterboxd-watched_films-export` will be generated and saved in your Downloads folder.
+A file named `watched.csv` will be generated and saved in your Downloads folder.
 You can then import it to Letterboxd at the following url: https://letterboxd.com/import/
 
 #### Wishlist films
@@ -162,7 +162,7 @@ Copy/Paste the following URL in your browser
 https://shelob.glitch.me/<your_username>/films/wish?exportWebsite=letterboxd
 ```
 
-A CSV file named `letterboxd-watchlist-export` will be generated and saved in your Downloads folder.
+A file named `wishlist.csv` will be generated and saved in your Downloads folder.
 You can then import it to Letterboxd at the following url: https://letterboxd.com/watchlist/
 
 
@@ -173,7 +173,7 @@ You can then import it to Letterboxd at the following url: https://letterboxd.co
 3. Make the necessary changes.
 4. Send a pull request.
 
-## Contributors :heart:
+## Contributors
 
 - [Pierrick TURELIER](https://github.com/PierrickGT)
 
