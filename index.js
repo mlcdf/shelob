@@ -81,9 +81,9 @@ const api = async (req, res) => {
         data = exportLetterboxd(data, req.params.filter);
         res.setHeader(
           'Content-disposition',
-          `attachment; filename=${req.params.filter === 'done'
-            ? 'watched'
-            : 'wishlist'}.csv`
+          `attachment; filename=${
+            req.params.filter === 'done' ? 'watched' : 'wishlist'
+          }.csv`
         );
         res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       }

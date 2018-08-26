@@ -47,25 +47,45 @@ function extractItems(html, category, filter) {
   $('.elco-collection-item').each(function() {
     const item = Object.create({});
 
-    item.frenchTitle = $(this).find('.elco-title a').text().trim();
+    item.frenchTitle = $(this)
+      .find('.elco-title a')
+      .text()
+      .trim();
 
     if (!['morceaux', 'albums'].includes(category)) {
-      const originalTitle = $(this).find('.elco-original-title').text().trim();
+      const originalTitle = $(this)
+        .find('.elco-original-title')
+        .text()
+        .trim();
       item.originalTitle =
         originalTitle !== '' ? originalTitle : item.frenchTitle;
     }
 
-    item.year = parseInt($(this).find('.elco-date').text().trim().slice(1, -1));
+    item.year = parseInt(
+      $(this)
+        .find('.elco-date')
+        .text()
+        .trim()
+        .slice(1, -1)
+    );
 
     const creators = [];
-    $(this).find('.elco-product-detail a.elco-baseline-a').each(function() {
-      creators.push($(this).text().trim());
-    });
+    $(this)
+      .find('.elco-product-detail a.elco-baseline-a')
+      .each(function() {
+        creators.push(
+          $(this)
+            .text()
+            .trim()
+        );
+      });
     item[creatorLabel(category)] = creators;
 
     if (filter === 'done') {
       item.rating = parseInt(
-        $(this).find('.elco-collection-rating.user > a > div > span').text()
+        $(this)
+          .find('.elco-collection-rating.user > a > div > span')
+          .text()
       );
     }
 
@@ -109,9 +129,9 @@ async function extract(username, category, filter) {
       collection.push(...items);
     };
 
-    const actions = indexes.map(handleResponse)
+    const actions = indexes.map(handleResponse);
 
-    await Promise.all(actions)
+    await Promise.all(actions);
   }
 
   return collection;
