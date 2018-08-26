@@ -1,4 +1,3 @@
-const bluebird = require('bluebird');
 const cheerio = require('cheerio');
 const got = require('got');
 
@@ -104,11 +103,15 @@ async function extract(username, category, filter) {
     // Build a [] from 2 => nbOfPages
     const indexes = Array.from({ length: nbOfPages }, (v, k) => k + 2);
 
-    await bluebird.map(indexes, async index => {
+    const handleResponse = async index => {
       response = await got(url + index, { timeout: 20000 });
       const items = extractItems(response.body, category, filter);
       collection.push(...items);
-    });
+    };
+
+    const actions = indexes.map(handleResponse)
+
+    await Promise.all(actions)
   }
 
   return collection;
