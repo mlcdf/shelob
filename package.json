@@ -12,14 +12,14 @@
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
-    "got": "^8.0.3",
-    "json2csv": "^3.11.5",
+    "got": "^9.1.0",
+    "json2csv": "^4.2.1",
     "micro": "^9.1.0",
     "microrouter": "^3.0.0"
   },
   "devDependencies": {
-    "eslint": "^4.16.0",
-    "micro-dev": "^2.2.0",
-    "prettier": "^1.10.2"
+    "eslint": "^5.4.0",
+    "micro-dev": "^3.0.0",
+    "prettier": "^1.14.2"
   }
 }

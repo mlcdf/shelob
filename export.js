@@ -31,7 +31,7 @@ const exportLetterboxd = (data, filter) => {
     fields = ['Title', 'Year', 'Directors'];
   }
 
-  return json2csv({ data, fields });
+  return json2csv.parse(data, { fields: fields });
 };
 
 module.exports = {
