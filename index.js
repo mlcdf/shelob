@@ -89,7 +89,8 @@ const api = async (req, res) => {
       }
       send(res, 200, data);
     })
-    .catch(() => {
+    .catch(err => {
+      console.log(err);
       throw new AppError();
     });
 };
