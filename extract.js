@@ -47,6 +47,12 @@ function extractItems(html, category, filter) {
   $('.elco-collection-item').each(function() {
     const item = Object.create({});
 
+    item.id = parseInt(
+      $(this)
+        .find('.elco-collection-content > .elco-collection-poster')
+        .attr('data-sc-product-id')
+    );
+
     item.frenchTitle = $(this)
       .find('.elco-title a')
       .text()
