@@ -47,6 +47,12 @@ function extractItems(html, category, filter) {
   $('.elco-collection-item').each(function() {
     const item = Object.create({});
 
+    item.id = parseInt(
+      $(this)
+        .find('.elco-collection-content > .elco-collection-poster')
+        .attr('data-sc-product-id')
+    );
+
     item.frenchTitle = $(this)
       .find('.elco-title a')
       .text()
@@ -96,7 +102,7 @@ function extractItems(html, category, filter) {
 }
 
 async function extract(username, category, filter) {
-  const collection = [];
+  let collection = [];
   const url = `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-`;
   let response;
 
@@ -134,7 +140,78 @@ async function extract(username, category, filter) {
     await Promise.all(actions);
   }
 
+  if (category === 'films' && filter === 'done') {
+    collection = extractWatchedDate(collection, username, category);
+  }
+
   return collection;
+}
+
+async function extractWatchedDate(collection, username, category) {
+  const urlWatched = `https://www.senscritique.com/${username}/journal/${category}/all/all/page-`;
+  let response;
+  let page = 1;
+
+  // Crawl pages
+  do {
+    try {
+      response = await got(urlWatched + page + '.ajax', { timeout: 20000 });
+    } catch (err) {
+      err.message = 'SensCritique is unavailable';
+      throw err;
+    }
+
+    // S'il y a une redirection vers la page d'accueil de SC, c'est que l'utilisateur n'existe pas
+    if (response.statusCode === 301) {
+      throw new AppError(404, "This SensCritique user doesn't exist.");
+    }
+
+    const $ = cheerio.load(response.body);
+
+    if ($('.eldi-list-item').length === 0) {
+      break;
+    }
+
+    // Then extract data from the first page
+    collection = insertWatchedDateIntoCollection(response.body, collection);
+
+    page++;
+
+    await sleep(1000);
+
+  } while (true);
+
+  return collection;
+}
+
+function insertWatchedDateIntoCollection(html, collection) {
+  const $ = cheerio.load(html);
+
+  $('.eldi-list-item').each(function() {
+    const watchedDate = $(this).attr('data-sc-datedone');
+
+    $(this).find('.eldi-collection-container').each(function() {
+      const id = parseInt(
+        $(this)
+          .find('.eldi-collection-poster')
+          .attr('data-sc-product-id')
+      );
+
+      if (watchedDate !== undefined) {
+        collection.forEach(function(element, index) {
+          if (element.id === id) {
+            collection[index].watchedDate = watchedDate;
+          }
+        });
+      }
+    });
+  });
+
+  return collection;
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 module.exports = {
