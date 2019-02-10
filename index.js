@@ -2,7 +2,7 @@ const { send } = require('micro');
 const { router, get } = require('microrouter');
 const { exportLetterboxd } = require('./export');
 const { extract } = require('./extract');
-const { AppError } = require('./errors');
+const { createError } = require('./utils');
 
 const help = {
   usage: 'GET /:username/:category/:filter',
@@ -19,22 +19,25 @@ const validateParams = req => {
       req.params.category
     )
   ) {
-    throw new AppError(
+    throw createError(
       400,
+      'unexpected_parameter',
       'Invalid category parameter. Should be either `films`, `series`, `bd`, `livres`, `albums` or `morceaux`.'
     );
   }
 
   if (!['done', 'wish'].includes(req.params.filter)) {
-    throw new AppError(
+    throw createError(
       400,
+      'unexpected_parameter',
       'Invalid filter parameter. Should be either `done` or `filter`.'
     );
   }
 
   if (req.params.exportWebsite && req.params.exportWebsite !== 'letterboxd') {
-    throw new AppError(
+    throw createError(
       400,
+      'unexpected_parameter',
       'Invalid optional exportWebsite paramater. Should be either empty or `letterboxd`'
     );
   }
@@ -43,8 +46,9 @@ const validateParams = req => {
     req.query.exportWebsite === 'letterboxd' &&
     req.params.category !== 'films'
   ) {
-    throw new AppError(
+    throw createError(
       400,
+      'unexpected_parameter',
       'The Letterboxd export is only available for the `films` category. Please remove this query param.'
     );
   }
@@ -91,12 +95,12 @@ const api = async (req, res) => {
     })
     .catch(err => {
       console.log(err);
-      throw new AppError();
+      createError(500, 'unknown_error', 'Unknown error');
     });
 };
 
 const decorateWithHeaders = handler => (req, res) => {
-  const referer = req.headers['referer'];
+  const referer = req.headers.referer;
 
   if (!referer || referer === '') {
     res.setHeader('Access-Control-Allow-Origin', '*');

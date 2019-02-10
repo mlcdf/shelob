@@ -1,7 +1,7 @@
 const cheerio = require('cheerio');
 const got = require('got');
 
-const { AppError } = require('./errors');
+const { createError } = require('./utils');
 
 /**
  * Figure out which label to use for the field `creators`
@@ -110,7 +110,11 @@ async function extract(username, category, filter) {
 
   // S'il y a une redirection vers la page d'accueil de SC, c'est que l'utilisateur n'existe pas
   if (response.statusCode === 301) {
-    throw new AppError(404, "This SensCritique user doesn't exist.");
+    throw createError(
+      404,
+      'unknown_user',
+      "This SensCritique user doesn't exist."
+    );
   }
 
   // Then extract data from the first page
