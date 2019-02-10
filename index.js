@@ -79,7 +79,12 @@ const api = async (req, res) => {
     });
   }
 
-  await extract(req.params.username, req.params.category, req.params.filter)
+  await extract(
+    req.params.username,
+    req.params.category,
+    req.params.filter,
+    req.query
+  )
     .then(data => {
       if (req.query.exportWebsite === 'letterboxd') {
         data = exportLetterboxd(data, req.params.filter);

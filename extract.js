@@ -101,7 +101,7 @@ function extractItems(html, category, filter) {
   return items;
 }
 
-async function extract(username, category, filter) {
+async function extract(username, category, filter, query) {
   let collection = [];
   const url = `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-`;
   let response;
@@ -144,7 +144,11 @@ async function extract(username, category, filter) {
     await Promise.all(actions);
   }
 
-  if (category === 'films' && filter === 'done') {
+  if (
+    query.watchedDate === 'true' &&
+    category === 'films' &&
+    filter === 'done'
+  ) {
     collection = extractWatchedDate(collection, username, category);
   }
 
@@ -185,7 +189,7 @@ async function extractWatchedDate(collection, username, category) {
 
     page++;
 
-    await sleep(1000);
+    await sleep(100);
   } while (true); // eslint-disable-line
 
   return collection;
