@@ -176,7 +176,7 @@ You can then import it to Letterboxd at the following url: https://letterboxd.co
 ## Contributors
 
 - [Pierrick TURELIER](https://github.com/PierrickGT)
-
+- [DDR](https://github.com/DDrzn)
 
 ## License
 
