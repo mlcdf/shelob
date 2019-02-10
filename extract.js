@@ -167,7 +167,11 @@ async function extractWatchedDate(collection, username, category) {
 
     // S'il y a une redirection vers la page d'accueil de SC, c'est que l'utilisateur n'existe pas
     if (response.statusCode === 301) {
-      throw new AppError(404, "This SensCritique user doesn't exist.");
+      throw createError(
+        404,
+        'unknown_user',
+        "This SensCritique user doesn't exist."
+      );
     }
 
     const $ = cheerio.load(response.body);
@@ -182,8 +186,7 @@ async function extractWatchedDate(collection, username, category) {
     page++;
 
     await sleep(1000);
-
-  } while (true);
+  } while (true); // eslint-disable-line
 
   return collection;
 }
@@ -194,21 +197,23 @@ function insertWatchedDateIntoCollection(html, collection) {
   $('.eldi-list-item').each(function() {
     const watchedDate = $(this).attr('data-sc-datedone');
 
-    $(this).find('.eldi-collection-container').each(function() {
-      const id = parseInt(
-        $(this)
-          .find('.eldi-collection-poster')
-          .attr('data-sc-product-id')
-      );
+    $(this)
+      .find('.eldi-collection-container')
+      .each(function() {
+        const id = parseInt(
+          $(this)
+            .find('.eldi-collection-poster')
+            .attr('data-sc-product-id')
+        );
 
-      if (watchedDate !== undefined) {
-        collection.forEach(function(element, index) {
-          if (element.id === id) {
-            collection[index].watchedDate = watchedDate;
-          }
-        });
-      }
-    });
+        if (watchedDate !== undefined) {
+          collection.forEach((element, index) => {
+            if (element.id === id) {
+              collection[index].watchedDate = watchedDate;
+            }
+          });
+        }
+      });
   });
 
   return collection;
