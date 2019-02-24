@@ -40,7 +40,6 @@ class NoInvalidCategory extends Validator {
   }
 
   isValid() {
-    console.log(!this.allowedCategories.includes(this.req.params.category));
     if (!this.allowedCategories.includes(this.req.params.category)) {
       return false;
     }

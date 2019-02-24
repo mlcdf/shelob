@@ -113,8 +113,6 @@ async function extract(username, category, filter, query) {
   const url = `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-`;
   let response;
 
-  console.log(url);
-
   // Crawl the first page
   try {
     response = await got(url + '1', { timeout: 20000, followRedirect: false });
