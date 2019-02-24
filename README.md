@@ -176,8 +176,8 @@ You can then import it to Letterboxd at the following url: https://letterboxd.co
 ## Contributors
 
 - [Maxime Le Conte des Floris](https://github.com/mlcdf)
-- [Pierrick TURELIER](https://github.com/PierrickGT)
-- [DDR](https://github.com/DDrzn)
+- [Pierrick Turelier](https://github.com/PierrickGT)
+- [David Drezen](https://github.com/DDrzn)
 
 ## License
 
