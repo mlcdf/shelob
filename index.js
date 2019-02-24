@@ -7,6 +7,10 @@ const help = {
   documentation: 'https://github.com/mlcdf/shelob#usage'
 };
 
+// Validator is a base class. It should be extended to defined a new Validator.
+// Each extended classes should implement both:
+// get errorMessage() {}
+// function isValid() {}
 class Validator {
   constructor(req) {
     // Request to validate
@@ -149,7 +153,7 @@ const api = async (req, res) => {
   req.errors = validateReq(req);
 
   if (req.errors.length > 0) {
-    return send(res, 400, { ok: false, errors: req.errors });
+    return send(res, 400, { errors: req.errors });
   }
 
   await extract(
@@ -172,6 +176,7 @@ const api = async (req, res) => {
       send(res, 200, data);
     })
     .catch(err => {
+      // if the error object has an id, it's a custom error created via createError()
       if (err.id) {
         return send(res, err.statusCode, {
           errors: [{ id: err.id, message: err.message }]

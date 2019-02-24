@@ -1,5 +1,6 @@
 const cheerio = require('cheerio');
 const got = require('got');
+const json2csv = require('json2csv');
 
 const createError = (code, id, message) => {
   const err = new Error(message);
@@ -233,8 +234,6 @@ function insertWatchedDateIntoCollection(html, collection) {
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
-
-const json2csv = require('json2csv');
 
 function toCSV(data, filter) {
   let fields = [];
