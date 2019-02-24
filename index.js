@@ -9,49 +9,128 @@ const help = {
   documentation: 'https://github.com/mlcdf/shelob#usage'
 };
 
+class Validator {
+  constructor(req) {
+    // Request to validate
+    this.req = req;
+  }
+
+  // Set a default errorId
+  get errorId() {
+    return 'invalid_parameter';
+  }
+}
+
+class NoInvalidCategory extends Validator {
+  constructor(req) {
+    super(req);
+
+    this.allowedCategories = [
+      'films',
+      'series',
+      'bd',
+      'livres',
+      'albums',
+      'morceaux'
+    ];
+  }
+
+  get errorMessage() {
+    return `Expected ${this.allowedCategories.join('|')}, got ${
+      this.req.params.category
+    }`;
+  }
+
+  isValid() {
+    console.log(!this.allowedCategories.includes(this.req.params.category));
+    if (!this.allowedCategories.includes(this.req.params.category)) {
+      return false;
+    }
+    return true;
+  }
+}
+
+class NoConflictingExportParameter extends Validator {
+  constructor(req) {
+    super(req);
+  }
+
+  get errorMessage() {
+    return "The Letterboxd export is only available for the 'films' category";
+  }
+
+  isValid() {
+    if (
+      this.req.query.exportWebsite === 'letterboxd' &&
+      this.req.params.category !== 'films'
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+class NoInvalidExportParameter extends Validator {
+  constructor(req) {
+    super(req);
+  }
+  get errorMessage() {
+    return 'Invalid optional exportWebsite paramater. Should be either empty or `letterboxd`';
+  }
+
+  isValid() {
+    if (
+      this.req.query.exportWebsite &&
+      this.req.query.exportWebsite !== 'letterboxd'
+    ) {
+      return false;
+    }
+    return true;
+  }
+}
+
+class NoInvalidFilterParameter extends Validator {
+  constructor(req) {
+    super(req);
+  }
+
+  get errorMessage() {
+    return 'Invalid filter parameter. Should be either `done` or `filter`';
+  }
+
+  isValid() {
+    if (!['done', 'wish'].includes(this.req.params.filter)) {
+      return false;
+    }
+    return true;
+  }
+}
+
 /**
  *  Validate the request parameters
- * @param {*} params
+ * @param {*} req
  */
-const validateParams = req => {
-  if (
-    !['films', 'series', 'bd', 'livres', 'albums', 'morceaux'].includes(
-      req.params.category
-    )
-  ) {
-    throw createError(
-      400,
-      'unexpected_parameter',
-      'Invalid category parameter. Should be either `films`, `series`, `bd`, `livres`, `albums` or `morceaux`.'
-    );
+const validateReq = req => {
+  rules = [
+    new NoInvalidCategory(req),
+    new NoConflictingExportParameter(req),
+    new NoInvalidExportParameter(req),
+    new NoInvalidFilterParameter(req)
+  ];
+
+  errors = [];
+
+  for (const rule of rules) {
+    if (!rule.isValid()) {
+      errors.push({
+        id: rule.errorId,
+        message: rule.errorMessage
+      });
+    }
   }
 
-  if (!['done', 'wish'].includes(req.params.filter)) {
-    throw createError(
-      400,
-      'unexpected_parameter',
-      'Invalid filter parameter. Should be either `done` or `filter`.'
-    );
-  }
-
-  if (req.params.exportWebsite && req.params.exportWebsite !== 'letterboxd') {
-    throw createError(
-      400,
-      'unexpected_parameter',
-      'Invalid optional exportWebsite paramater. Should be either empty or `letterboxd`'
-    );
-  }
-
-  if (
-    req.query.exportWebsite === 'letterboxd' &&
-    req.params.category !== 'films'
-  ) {
-    throw createError(
-      400,
-      'unexpected_parameter',
-      'The Letterboxd export is only available for the `films` category. Please remove this query param.'
-    );
-  }
+  return errors;
 };
 
 // GET /
@@ -70,13 +149,10 @@ const notFound = (req, res) => {
 
 // GET /:username/:category/:filter/:exportWebsite?
 const api = async (req, res) => {
-  try {
-    validateParams(req);
-  } catch (err) {
-    send(res, err.statusCode, {
-      message: err.message,
-      documentation: help.documentation
-    });
+  req.errors = validateReq(req);
+
+  if (req.errors.length > 0) {
+    return send(res, 400, { ok: false, errors });
   }
 
   await extract(
