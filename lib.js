@@ -1,7 +1,14 @@
 const cheerio = require('cheerio');
 const got = require('got');
 
-const { createError } = require('./utils');
+const createError = (code, id, message) => {
+  const err = new Error(message);
+
+  err.statusCode = code;
+  err.id = id;
+
+  return err;
+};
 
 /**
  * Figure out which label to use for the field `creators`
@@ -106,18 +113,20 @@ async function extract(username, category, filter, query) {
   const url = `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-`;
   let response;
 
+  console.log(url);
+
   // Crawl the first page
   try {
-    response = await got(url + '1', { timeout: 20000 });
+    response = await got(url + '1', { timeout: 20000, followRedirect: false });
   } catch (err) {
-    err.message = 'SensCritique is unavailable';
+    err.message += ' (SensCritique is might be unavailable)';
     throw err;
   }
 
   // S'il y a une redirection vers la page d'accueil de SC, c'est que l'utilisateur n'existe pas
   if (response.statusCode === 301) {
     throw createError(
-      404,
+      400,
       'unknown_user',
       "This SensCritique user doesn't exist."
     );
@@ -165,14 +174,14 @@ async function extractWatchedDate(collection, username, category) {
     try {
       response = await got(urlWatched + page + '.ajax', { timeout: 20000 });
     } catch (err) {
-      err.message = 'SensCritique is unavailable';
+      err.message += ' (SensCritique is might be unavailable)';
       throw err;
     }
 
     // S'il y a une redirection vers la page d'accueil de SC, c'est que l'utilisateur n'existe pas
     if (response.statusCode === 301) {
       throw createError(
-        404,
+        400,
         'unknown_user',
         "This SensCritique user doesn't exist."
       );
@@ -227,6 +236,43 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+const json2csv = require('json2csv');
+
+function toCSV(data, filter) {
+  let fields = [];
+
+  data = JSON.parse(
+    JSON.stringify(data)
+      .split('"originalTitle":')
+      .join('"Title":')
+      .split('"year":')
+      .join('"Year":')
+      .split('"directors":')
+      .join('"Directors":')
+      .split('"rating":')
+      .join('"Rating10":')
+  );
+
+  for (let i = 0; i < data.length; i++) {
+    data[i].Directors = data[i].Directors.join(', ');
+
+    delete data[i].frenchTitle;
+
+    if (filter === 'wish') {
+      delete data[i].Rating10;
+    }
+  }
+
+  if (filter === 'done') {
+    fields = ['Title', 'Year', 'Directors', 'Rating10'];
+  } else if (filter === 'wish') {
+    fields = ['Title', 'Year', 'Directors'];
+  }
+
+  return json2csv.parse(data, { fields });
+}
+
 module.exports = {
-  extract
+  extract,
+  toCSV
 };

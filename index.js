@@ -1,8 +1,6 @@
 const { send } = require('micro');
 const { router, get } = require('microrouter');
-const { exportLetterboxd } = require('./export');
-const { extract } = require('./extract');
-const { createError } = require('./utils');
+const { extract, toCSV } = require('./lib');
 
 const help = {
   usage: 'GET /:username/:category/:filter',
@@ -163,7 +161,7 @@ const api = async (req, res) => {
   )
     .then(data => {
       if (req.query.exportWebsite === 'letterboxd') {
-        data = exportLetterboxd(data, req.params.filter);
+        data = toCSV(data, req.params.filter);
         res.setHeader(
           'Content-disposition',
           `attachment; filename=${
@@ -175,8 +173,13 @@ const api = async (req, res) => {
       send(res, 200, data);
     })
     .catch(err => {
+      if (err.id) {
+        return send(res, err.statusCode, {
+          errors: [{ id: err.id, message: err.message }]
+        });
+      }
       console.log(err);
-      createError(500, 'unknown_error', 'Unknown error');
+      throw err;
     });
 };
 
