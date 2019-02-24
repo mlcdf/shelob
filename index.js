@@ -109,14 +109,14 @@ class NoInvalidFilterParameter extends Validator {
  * @param {*} req
  */
 const validateReq = req => {
-  rules = [
+  const rules = [
     new NoInvalidCategory(req),
     new NoConflictingExportParameter(req),
     new NoInvalidExportParameter(req),
     new NoInvalidFilterParameter(req)
   ];
 
-  errors = [];
+  const errors = [];
 
   for (const rule of rules) {
     if (!rule.isValid()) {
@@ -149,7 +149,7 @@ const api = async (req, res) => {
   req.errors = validateReq(req);
 
   if (req.errors.length > 0) {
-    return send(res, 400, { ok: false, errors });
+    return send(res, 400, { ok: false, errors: req.errors });
   }
 
   await extract(
