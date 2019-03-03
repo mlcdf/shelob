@@ -1,5 +1,6 @@
 # Shelob
 
+[![pipeline](https://framagit.org/mlcdf/shelob/badges/master/pipeline.svg)](https://framagit.org/mlcdf/shelob/-/jobs)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 > Shelob crawls https://senscritique.com and extracts your data (or someone else's).
