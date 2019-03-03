@@ -13,10 +13,17 @@ stages:
   - build
   - test
 
-build:
+cache:
+  paths:
+    - node_modules/
+
+install_dependencies:
   stage: build
   script:
     - npm install
+  artifacts:
+    paths:
+      - node_modules/
 
 lint:
   stage: test
