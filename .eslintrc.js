@@ -1,11 +1,12 @@
 module.exports = {
-  extends: 'eslint:recommended',
+  extends: ['eslint:recommended', 'plugin:ava/recommended'],
   env: {
     es6: true,
     node: true
   },
   parserOptions: {
-    ecmaVersion: 8
+    ecmaVersion: 8,
+    sourceType: "module"
   },
   rules: {
     'no-console': 'off', // override eslint:recommended

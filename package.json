@@ -5,7 +5,7 @@
     "dev": "micro-dev -p ${PORT:-3000}",
     "format": "prettier *.js --write --single-quote",
     "lint": "eslint --fix **.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava test.js"
   },
   "engines": {
     "node": ">=8.x"
@@ -18,7 +18,9 @@
     "microrouter": "^3.0.0"
   },
   "devDependencies": {
+    "ava": "^1.2.1",
     "eslint": "^5.4.0",
+    "eslint-plugin-ava": "^5.1.1",
     "micro-dev": "^3.0.0",
     "prettier": "^1.14.2"
   }
