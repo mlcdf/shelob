@@ -6,7 +6,7 @@ module.exports = {
   },
   parserOptions: {
     ecmaVersion: 8,
-    sourceType: "module"
+    sourceType: 'module'
   },
   rules: {
     'no-console': 'off', // override eslint:recommended
