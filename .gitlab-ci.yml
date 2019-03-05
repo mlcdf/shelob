@@ -41,5 +41,6 @@ deploy:
     - ssh-add <(echo "$PRIVATE_SSH_KEY")
     - git remote remove production
     - git remote add production ssh://$SSH_USER@207.154.202.18/var/repo/shelob.git
+    - git rev-parse HEAD
     - git push production master --force
 
