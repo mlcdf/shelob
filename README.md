@@ -7,7 +7,7 @@
 
 ## Usage
 
-All API access is over HTTPS, and accessed from https://shelob.glitch.me.
+All API access is over HTTPS, and accessed from https://shelob.mlcdf.com.
 
 ### Collection of a user by category
 
@@ -29,7 +29,7 @@ GET /:username/:category/done
 Example:
 
 ```console
-curl -i 'https://shelob.glitch.me/mlcdf/series/done'
+curl -i 'https://shelob.mlcdf.com/mlcdf/series/done'
 ```
 
 #### Response
@@ -94,7 +94,7 @@ Note: The field `category` must be one of the following value:
 Example:
 
 ```console
-curl -i 'https://shelob.glitch.me/mlcdf/series/wish'
+curl -i 'https://shelob.mlcdf.com/mlcdf/series/wish'
 ```
 
 #### Response
@@ -142,7 +142,7 @@ Example:
 
 Copy/Paste the following URL in your browser
 ```
-https://shelob.glitch.me/<your_username>/films/done?exportWebsite=letterboxd
+https://shelob.mlcdf.com/<your_username>/films/done?exportWebsite=letterboxd
 ```
 
 A file named `watched.csv` will be generated and saved in your Downloads folder.
@@ -160,7 +160,7 @@ Example:
 
 Copy/Paste the following URL in your browser
 ```
-https://shelob.glitch.me/<your_username>/films/wish?exportWebsite=letterboxd
+https://shelob.mlcdf.com/<your_username>/films/wish?exportWebsite=letterboxd
 ```
 
 A file named `wishlist.csv` will be generated and saved in your Downloads folder.
