@@ -1,96 +1,89 @@
 import test from 'ava';
 import app from './server';
 import request from 'supertest';
+import { extractStats } from './lib';
 
-test('mlcdf/films/done', async t => {
-  const res = await request(app).get('/mlcdf/films/done');
+test.before(async t => {
+  t.context.statsDone = await extractStats("khomille", "done")
+  t.context.statsInWishlist = await extractStats("khomille", "wish")
+});
+
+test('khomille/films/done', async t => {
+  const res = await request(app).get('/khomille/films/done');
 
   t.is(res.status, 200);
-
-  t.true(res.body.length > 0);
-  t.true(res.body.length > 700); // sanity check
-  t.true(res.body.length < 1000); // sanity check
-
+  t.is(res.body.length, t.context.statsDone.films);
   t.true('directors' in res.body[0]);
-
   t.false('watchedDate' in res.body[0]);
 });
 
-test('mlcdf/films/wish', async t => {
-  const res = await request(app).get('/mlcdf/films/wish');
+test('khomille/films/wish', async t => {
+  const res = await request(app).get('/khomille/films/wish');
 
   t.is(res.status, 200);
-
-  t.true(res.body.length > 0);
-  t.true(res.body.length > 200); // sanity check
-  t.true(res.body.length < 1000); // sanity check
-
+  t.is(res.body.length, t.context.statsInWishlist.films);
   t.true('directors' in res.body[0]);
 });
 
-test('mlcdf/films/done?watchedDate=True', async t => {
+test('khomille/films/done?watchedDate=True', async t => {
   const res = await request(app)
-    .get('/mlcdf/films/done')
+    .get('/khomille/films/done')
     .query({ watchedDate: true });
 
   t.is(res.status, 200);
-
-  t.true(res.body.length > 0);
-  t.true(res.body.length > 700); // sanity check
-  t.true(res.body.length < 1000); // sanity check
-
+  t.is(res.body.length, t.context.statsDone.films);
   t.true('directors' in res.body[0]);
   t.true('watchedDate' in res.body[0]);
 });
 
-test('mlcdf/livres/done', async t => {
-  const res = await request(app).get('/mlcdf/livres/done');
+test('khomille/livres/done', async t => {
+  const res = await request(app).get('/khomille/livres/done');
 
-  t.true(res.body.length > 0);
+  t.is(res.body.length + 1, t.context.statsDone.livres);
   t.true('creators' in res.body[0]);
 });
 
-test('mlcdf/livres/wish', async t => {
-  const res = await request(app).get('/mlcdf/livres/wish');
+test('khomille/livres/wish', async t => {
+  const res = await request(app).get('/khomille/livres/wish');
 
-  t.true(res.body.length > 0);
+  t.is(res.body.length, t.context.statsInWishlist.livres);
   t.true('creators' in res.body[0]);
 });
 
-test('mlcdf/morceaux/done', async t => {
-  const res = await request(app).get('/mlcdf/morceaux/done');
+test('khomille/morceaux/done', async t => {
+  const res = await request(app).get('/khomille/morceaux/done');
 
-  t.true(res.body.length > 0);
+  t.is(res.body.length, t.context.statsDone.morceaux);
   t.false('originalTitle' in res.body[0]);
 });
 
-test('mlcdf/morceaux/wish', async t => {
-  const res = await request(app).get('/mlcdf/morceaux/wish');
+test('khomille/morceaux/wish', async t => {
+  const res = await request(app).get('/khomille/morceaux/wish');
 
-  t.true(res.body.length === 0);
+  t.is(res.body.length, t.context.statsInWishlist.morceaux);
 });
 
-test('mlcdf/albums/done', async t => {
-  const res = await request(app).get('/mlcdf/albums/done');
-  t.true(res.body.length > 0);
+test('khomille/albums/done', async t => {
+  const res = await request(app).get('/khomille/albums/done');
+  t.is(res.body.length, t.context.statsDone.albums);
   t.false('originalTitle' in res.body[0]);
 });
 
-test('mlcdf/albums/wish', async t => {
-  const res = await request(app).get('/mlcdf/albums/wish');
-  t.true(res.body.length > 0);
+test('khomille/albums/wish', async t => {
+  const res = await request(app).get('/khomille/albums/wish');
+  t.is(res.body.length, t.context.statsInWishlist.albums);
   t.false('originalTitle' in res.body[0]);
 });
 
-test('mlcdf/bd/done', async t => {
-  const res = await request(app).get('/mlcdf/bd/done');
-  t.true(res.body.length > 0);
+test('khomille/bd/done', async t => {
+  const res = await request(app).get('/khomille/bd/done');
+  t.is(res.body.length, t.context.statsDone.bd + 1);
   t.true('illustrators' in res.body[0]);
 });
 
-test('mlcdf/bd/wish', async t => {
-  const res = await request(app).get('/mlcdf/bd/wish');
-  t.true(res.body.length > 0);
+test('khomille/bd/wish', async t => {
+  const res = await request(app).get('/khomille/bd/wish');
+  t.is(res.body.length, t.context.statsInWishlist.bd);
   t.true('illustrators' in res.body[0]);
 });
 

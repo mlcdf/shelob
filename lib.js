@@ -2,6 +2,10 @@ const cheerio = require('cheerio');
 const got = require('got');
 const json2csv = require('json2csv');
 
+function makeCollectionUrl(username, category = 'all', filter = 'all') {
+  return `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-`;
+}
+
 const createError = (code, id, message) => {
   const err = new Error(message);
 
@@ -111,7 +115,7 @@ function extractItems(html, category, filter) {
 
 async function extract(username, category, filter, query) {
   let collection = [];
-  const url = `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-`;
+  const url = makeCollectionUrl(username, category, filter);
   let response;
 
   // Crawl the first page
@@ -269,7 +273,41 @@ function toCSV(data, filter) {
   return json2csv.parse(data, { fields });
 }
 
+async function extractStats(username, filter) {
+  const url = makeCollectionUrl(username, 'all', filter);
+  const response = await got(url);
+  const $ = cheerio.load(response.body);
+
+  // Set default values
+  const stats = {
+    "films": 0,
+    "series": 0,
+    "bd": 0,
+    "livres": 0,
+    "albums": 0,
+    "morceaux": 0
+  };
+
+  $('li[data-rel="collection-subtype"]').each(function() {
+    const category = $(this).attr('data-sc-collection-subtype')
+    if (category === 'all') {
+      return
+    }
+
+    stats[category] = parseInt(
+      $(this)
+        .find('span[data-rel="collection-subtype-count"]')
+        .text()
+        .trim()
+        .slice(1, -1)
+    );
+  });
+
+  return stats;
+}
+
 module.exports = {
   extract,
-  toCSV
+  toCSV,
+  extractStats
 };
