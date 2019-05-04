@@ -280,18 +280,18 @@ async function extractStats(username, filter) {
 
   // Set default values
   const stats = {
-    "films": 0,
-    "series": 0,
-    "bd": 0,
-    "livres": 0,
-    "albums": 0,
-    "morceaux": 0
+    films: 0,
+    series: 0,
+    bd: 0,
+    livres: 0,
+    albums: 0,
+    morceaux: 0
   };
 
   $('li[data-rel="collection-subtype"]').each(function() {
-    const category = $(this).attr('data-sc-collection-subtype')
+    const category = $(this).attr('data-sc-collection-subtype');
     if (category === 'all') {
-      return
+      return;
     }
 
     stats[category] = parseInt(

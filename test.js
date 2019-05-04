@@ -4,8 +4,8 @@ import request from 'supertest';
 import { extractStats } from './lib';
 
 test.before(async t => {
-  t.context.statsDone = await extractStats("khomille", "done")
-  t.context.statsInWishlist = await extractStats("khomille", "wish")
+  t.context.statsDone = await extractStats('khomille', 'done');
+  t.context.statsInWishlist = await extractStats('khomille', 'wish');
 });
 
 test('khomille/films/done', async t => {
