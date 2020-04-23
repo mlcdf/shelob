@@ -7,7 +7,7 @@
 
 ## Usage
 
-All API access is over HTTPS, and accessed from https://shelob.mlcdf.com.
+All API access is over HTTPS, and accessed from https://shelob.glitch.me.
 
 ### Collection of a user by category
 
