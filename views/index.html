@@ -1,0 +1,98 @@
+<!-- This is a static file -->
+<!-- served from your routes in server.js -->
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Extraire des données de www.senscritique.com</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Extraire des données de www.senscritique.com"
+    />
+    <link
+      id="favicon"
+      rel="icon"
+      href="https://glitch.com/edit/favicon-app.ico"
+      type="image/x-icon"
+    />
+
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css" />
+
+    <!-- import the webpage's client-side javascript file -->
+    <script src="/script.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>Extraire des données de www.senscritique.com</h1>
+    </header>
+
+    <main>
+      <h2>Guide d'utilisation</h2>
+      <ol>
+        <li>
+          Copier le lien vers <b>sondage</b>, une <b>liste</b>, ou la
+          <b>collection</b> d'une membre.
+        </li>
+        <li>Le coller dans le formulaire ci-dessous et lancer l'extration.</li>
+      </ol>
+
+      <form class="main-form" id="main-form" name="mainForm">
+        <label>
+          Lien vers la page à extraire
+          <input name="url" type="text" required aria-describedby="examples" />
+        </label>
+        <div id="examples">
+          Quelques exemples de page :
+          <ul>
+            <li>
+              un
+              <a
+                href="https://www.senscritique.com/top/Les_meilleures_ouvertures_de_films/521121"
+                >sondage</a
+              >
+            </li>
+            <li>
+              une
+              <a href="https://www.senscritique.com/liste/Top_10_Films/297529"
+                >liste</a
+              >
+            </li>
+            <li>
+              la
+              <a
+                href="https://www.senscritique.com/mlcdf/collection/rating/all/all/all/all/all/all/all/all/page-1"
+                >collection d'un membre</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <button type="submit">Lancer l'extraction</button>
+      </form>
+
+      <section id="result">
+        <form>
+          <button type="submit" id="download">Télécharger</button>
+          <button type="submit" id="open-raw">
+            Ouvrir dans un nouvel onglet
+          </button>
+          <button id="copy">Copier</button>
+        </form>
+        <pre><code id="output-js"></code></pre>
+      </section>
+    </main>
+
+    <footer>
+      Créé avec <a href="https://glitch.com">Glitch</a> par
+      <a href="https://twitter.com/mlcdf">@mlcdf</a>.
+    </footer>
+
+    <!-- include the Glitch button to show what the webpage is about and
+          to make it easier for folks to view source and remix -->
+    <div class="glitchButton" style="position:fixed;top:2em;right:20px;"></div>
+    <script src="https://button.glitch.me/button.js"></script>
+  </body>
+</html>

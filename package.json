@@ -1,25 +1,33 @@
 {
+  "//1": "describes your app and its dependencies",
+  "//2": "https://docs.npmjs.com/files/package.json",
+  "//3": "updating this file will download and update your packages",
+  "name": "hello-express",
+  "version": "0.0.1",
+  "description": "A simple Node app built on Express, instantly up and running.",
+  "main": "server.js",
   "scripts": {
-    "start": "NODE_ENV=PRODUCTION node ./index.js",
-    "dev": "node ./index.js",
-    "format": "prettier *.js --write --single-quote",
-    "lint": "eslint --fix **.js",
-    "test": "ava test.js"
-  },
-  "engines": {
-    "node": ">=8.x"
+    "start": "node server.js",
+    "test": "node test.js"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.2",
-    "express": "^4.16.4",
-    "got": "^9.1.0",
-    "json2csv": "^4.2.1"
+    "express": "^4.17.1",
+    "cheerio": "1.0.0-rc.3",
+    "body-parser": "^1.19.0"
   },
   "devDependencies": {
-    "ava": "^1.2.1",
-    "eslint": "^5.4.0",
-    "eslint-plugin-ava": "^5.1.1",
-    "prettier": "^1.14.2",
-    "supertest": "^3.4.2"
-  }
+    "tape": "^4.13.2"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "url": "https://glitch.com/edit/#!/extract-sc"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ]
 }

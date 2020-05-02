@@ -1,87 +1,129 @@
-const cheerio = require('cheerio');
-const got = require('got');
-const json2csv = require('json2csv');
+const url = require("url");
+const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
+const https = require("https");
 
-function makeCollectionUrl(username, category = 'all', filter = 'all') {
-  return `https://www.senscritique.com/${username}/collection/${filter}/${category}/all/all/all/all/all/all/all/page-`;
+const cheerio = require("cheerio");
+
+// Construit une URL à partir de l'url de la première page et d'un numéro de page
+function makeUrl(baseUrl, pageNumber) {
+  if (baseUrl.includes("page-")) {
+    if (baseUrl.match(/\/$/)) {
+      baseUrl = baseUrl.slice(0, -1)
+    }
+    let splitUrl = baseUrl.split("/");
+    splitUrl.pop();
+    splitUrl.push("page-" + pageNumber);
+    return splitUrl.join("/");
+  } else {
+    console.log("fuck")
+    if (!baseUrl.match(/\/$/)) {
+      baseUrl += "/";
+    }
+    return url.resolve(baseUrl, "page-" + pageNumber);
+  }
 }
 
-const createError = (code, id, message) => {
-  const err = new Error(message);
+/**
+ * Est ce que c'est un film, une série, un livre, etc...
+ * @param item {Object} is a cheerio object
+ */
+function guessItemCategory($item) {
+  const url = $item
+    .find(
+      ".elco-collection-content > .elco-product-detail > .elco-title > a, .elli-content > .elco-title > a"
+    )
+    .attr("href");
 
-  err.statusCode = code;
-  err.id = id;
-
-  return err;
-};
+  const category = url.split("/")[1];
+  if (
+    !["film", "serie", "livre", "jeuvideo", "morceau", "album", "bd"].includes(
+      category
+    )
+  ) {
+    createError(
+      500,
+      "guess_category_failed",
+      "We tried to guess the category of item x, but we failed"
+    );
+  }
+  return category;
+}
 
 /**
  * Figure out which label to use for the field `creators`
  * @param {String} category
  */
 function creatorLabel(category) {
-  if (category === 'films') {
-    return 'directors';
+  if (category === "film") {
+    return "directors";
   }
-  if (category === 'bd') {
-    return 'illustrators';
+  if (category === "bd") {
+    return "illustrators";
   }
-  return 'creators';
+  return "creators";
 }
 
-function collectionSize(html, filter) {
+function numberOfPages(html, filter) {
   const $ = cheerio.load(html);
 
-  let numberOfEntries = parseInt(
-    $(`[data-sc-collection-filter=${filter}] span span`)
-      .text()
-      .trim()
-      .slice(1, -1)
+  let nb = parseInt(
+    $(".eipa-pages .eipa-page")
+      .last()
+      .find("a")
+      .attr("data-sc-pager-page")
   );
 
-  if (Object.is(numberOfEntries, NaN)) {
-    numberOfEntries = 0;
+  if (Object.is(nb, NaN)) {
+    nb = 0;
   }
 
-  return numberOfEntries;
+  return nb;
 }
 
 /**
  * Extract all the items (ie movies, books, ...) from a HTML page
  * @param {String} html
- * @param {String} category
- * @param {String} filter
  */
-function extractItems(html, category, filter) {
+function extractItems(html) {
   const $ = cheerio.load(html);
   const items = [];
 
-  $('.elco-collection-item').each(function() {
+  if ($(".elco-collection-item, .elli-item").length === 0) {
+    throw new Error("Failed to extract item");
+  }
+
+  $(".elco-collection-item, .elli-item").each(function() {
     const item = Object.create({});
+
+    const category = guessItemCategory($(this));
+
+    item.category = category;
 
     item.id = parseInt(
       $(this)
-        .find('.elco-collection-content > .elco-collection-poster')
-        .attr('data-sc-product-id')
+        .find(".elco-collection-content > .elco-collection-poster, .elli-media figure")
+        .attr("data-sc-product-id")
     );
 
     item.frenchTitle = $(this)
-      .find('.elco-title a')
+      .find(".elco-title a")
       .text()
       .trim();
 
-    if (!['morceaux', 'albums'].includes(category)) {
+    if (!["morceaux", "albums"].includes(category)) {
       const originalTitle = $(this)
-        .find('.elco-original-title')
+        .find(".elco-original-title")
         .text()
         .trim();
       item.originalTitle =
-        originalTitle !== '' ? originalTitle : item.frenchTitle;
+        originalTitle !== "" ? originalTitle : item.frenchTitle;
     }
 
     item.year = parseInt(
       $(this)
-        .find('.elco-date')
+        .find(".elco-date")
         .text()
         .trim()
         .slice(1, -1)
@@ -89,7 +131,7 @@ function extractItems(html, category, filter) {
 
     const creators = [];
     $(this)
-      .find('.elco-product-detail a.elco-baseline-a')
+      .find(".elco-product-detail a.elco-baseline-a, .elli-content a.elco-baseline-a")
       .each(function() {
         creators.push(
           $(this)
@@ -99,10 +141,10 @@ function extractItems(html, category, filter) {
       });
     item[creatorLabel(category)] = creators;
 
-    if (filter === 'done') {
+    if (false) {
       item.rating = parseInt(
         $(this)
-          .find('.elco-collection-rating.user > a > div > span')
+          .find(".elco-collection-rating.user > a > div > span")
           .text()
       );
     }
@@ -113,16 +155,60 @@ function extractItems(html, category, filter) {
   return items;
 }
 
-async function extract(username, category, filter, query) {
+function get(url) {
+  return new Promise(function(resolve, reject) {
+    console.log("Requesting " + url);
+    https
+      .get(url, response => {
+        let data = "";
+
+        if (response.statusCode == 302 || response.statusCode == 301) {
+          console.log(`Got ${response.statusCode}, following redirection to ${response.headers.location}`)
+          return get(response.headers.location);
+        }
+
+        if (response.statusCode < 200 || response.statusCode > 299) {
+          console.error(`Got ${response.statusCode}`)
+          reject(response);
+          return;
+        }
+
+        // A chunk of data has been recieved.
+        response.on("data", chunk => {
+          data += chunk;
+        });
+
+        // The whole response has been received. Print out the result.
+        response.on("end", () => {
+          response.body = data;
+          resolve(response);
+        });
+      })
+      .on("error", err => {
+        reject(err);
+        console.log("Error: " + err.message);
+      });
+  });
+}
+
+function createError(code, id, message) {
+  const err = new Error(message);
+
+  err.statusCode = code;
+  err.id = id;
+
+  return err;
+}
+
+async function extract(url) {
   let collection = [];
-  const url = makeCollectionUrl(username, category, filter);
   let response;
 
   // Crawl the first page
   try {
-    response = await got(url + '1', { timeout: 20000, followRedirect: false });
+    response = await get(url, { timeout: 20000, followRedirect: false });
   } catch (err) {
-    err.message += ' (SensCritique is might be unavailable)';
+    err.message += " (SensCritique is might be unavailable)";
     throw err;
   }
 
@@ -130,24 +216,24 @@ async function extract(username, category, filter, query) {
   if (response.statusCode === 301) {
     throw createError(
       400,
-      'unknown_user',
+      "unknown_user",
       "This SensCritique user doesn't exist."
     );
   }
 
   // Then extract data from the first page
-  collection.push(...extractItems(response.body, category, filter));
+  collection.push(...extractItems(response.body));
 
-  // 18 being the number of item per page
-  const nbOfPages = Math.ceil(collectionSize(response.body, filter) / 18);
+  const nbOfPages = numberOfPages(response.body);
+  console.log(nbOfPages);
 
   if (nbOfPages > 1) {
     // Build a [] from 2 => nbOfPages
-    const indexes = Array.from({ length: nbOfPages }, (v, k) => k + 2);
-
+    const indexes = Array.from({ length: nbOfPages - 1 }, (v, k) => k + 2);
+    console.log(indexes);
     const handleResponse = async index => {
-      response = await got(url + index, { timeout: 20000 });
-      const items = extractItems(response.body, category, filter);
+      response = await get(lib.makeUrl(url, index), { timeout: 10000 });
+      const items = extractItems(response.body);
       collection.push(...items);
     };
 
@@ -156,158 +242,69 @@ async function extract(username, category, filter, query) {
     await Promise.all(actions);
   }
 
-  if (
-    query.watchedDate === 'true' &&
-    category === 'films' &&
-    filter === 'done'
-  ) {
-    collection = extractWatchedDate(collection, username, category);
-  }
-
   return collection;
 }
 
-async function extractWatchedDate(collection, username, category) {
-  const urlWatched = `https://www.senscritique.com/${username}/journal/${category}/all/all/page-`;
-  let response;
-  let page = 1;
-
-  // Crawl pages
-  do {
-    try {
-      response = await got(urlWatched + page + '.ajax', { timeout: 20000 });
-    } catch (err) {
-      err.message += ' (SensCritique is might be unavailable)';
-      throw err;
-    }
-
-    // S'il y a une redirection vers la page d'accueil de SC, c'est que l'utilisateur n'existe pas
-    if (response.statusCode === 301) {
-      throw createError(
-        400,
-        'unknown_user',
-        "This SensCritique user doesn't exist."
-      );
-    }
-
-    const $ = cheerio.load(response.body);
-
-    if ($('.eldi-list-item').length === 0) {
-      break;
-    }
-
-    // Then extract data from the first page
-    collection = insertWatchedDateIntoCollection(response.body, collection);
-
-    page++;
-
-    await sleep(100);
-  } while (true); // eslint-disable-line
-
-  return collection;
+function sha256(txt) {
+  const shasum = crypto.createHash("sha256");
+  shasum.update(txt);
+  return shasum.digest("hex");
 }
 
-function insertWatchedDateIntoCollection(html, collection) {
-  const $ = cheerio.load(html);
-
-  $('.eldi-list-item').each(function() {
-    const watchedDate = $(this).attr('data-sc-datedone');
-
-    $(this)
-      .find('.eldi-collection-container')
-      .each(function() {
-        const id = parseInt(
-          $(this)
-            .find('.eldi-collection-poster')
-            .attr('data-sc-product-id')
-        );
-
-        if (watchedDate !== undefined) {
-          collection.forEach((element, index) => {
-            if (element.id === id) {
-              collection[index].watchedDate = watchedDate;
-            }
-          });
-        }
-      });
-  });
-
-  return collection;
-}
-
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function toCSV(data, filter) {
-  let fields = [];
-
-  data = JSON.parse(
-    JSON.stringify(data)
-      .split('"originalTitle":')
-      .join('"Title":')
-      .split('"year":')
-      .join('"Year":')
-      .split('"directors":')
-      .join('"Directors":')
-      .split('"rating":')
-      .join('"Rating10":')
-  );
-
-  for (let i = 0; i < data.length; i++) {
-    data[i].Directors = data[i].Directors.join(', ');
-
-    delete data[i].frenchTitle;
-
-    if (filter === 'wish') {
-      delete data[i].Rating10;
+function isCacheValid(filepath, duration) {
+  return false;
+  try {
+    var stats = fs.statSync(filepath);
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      return false;
     }
   }
 
-  if (filter === 'done') {
-    fields = ['Title', 'Year', 'Directors', 'Rating10'];
-  } else if (filter === 'wish') {
-    fields = ['Title', 'Year', 'Directors'];
+  const currentTime = new Date();
+  if (currentTime.getTime() > stats.mtime.getTime() + duration) {
+    return false;
   }
 
-  return json2csv.parse(data, { fields });
+  return true;
 }
 
-async function extractStats(username, filter) {
-  const url = makeCollectionUrl(username, 'all', filter);
-  const response = await got(url);
-  const $ = cheerio.load(response.body);
+function cache(directory, duration) {
+  if (directory === undefined) {
+    throw new Error("directory cannot be undefined");
+  }
 
-  // Set default values
-  const stats = {
-    films: 0,
-    series: 0,
-    bd: 0,
-    livres: 0,
-    albums: 0,
-    morceaux: 0
-  };
+  return function(request, response, next) {
+    const hash = sha256(JSON.stringify(request.body));
+    const filepath = path.join(__dirname, directory, hash);
 
-  $('li[data-rel="collection-subtype"]').each(function() {
-    const category = $(this).attr('data-sc-collection-subtype');
-    if (category === 'all') {
+    if (isCacheValid(filepath, duration)) {
+      var content = fs.readFileSync(filepath, "utf8");
+      console.log("Serving from cache:\n" + content);
+      // response.type("json");
+      response.send(content);
       return;
+    } else {
+      response.sendResponse = response.send;
+      response.send = function(body) {
+        try {
+          console.log("Writing to cache");
+          fs.writeFileSync(filepath, JSON.stringify(body), "utf8");
+          response.sendResponse(body);
+        } catch (err) {
+          if (err) {
+            next(err);
+          }
+          console.log("The file was saved!");
+        }
+      };
+      next();
     }
-
-    stats[category] = parseInt(
-      $(this)
-        .find('span[data-rel="collection-subtype-count"]')
-        .text()
-        .trim()
-        .slice(1, -1)
-    );
-  });
-
-  return stats;
+  };
 }
 
 module.exports = {
-  extract,
-  toCSV,
-  extractStats
+  makeUrl,
+  cache,
+  extract
 };

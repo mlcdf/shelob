@@ -1,0 +1,89 @@
+/* this file is loaded by index.html and styles the page */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  margin: 2em 1em;
+  line-height: 1.5em;
+}
+
+h1 {
+  font-style: italic;
+  color: #373fff;
+  max-width: calc(100% - 5rem);
+  line-height: 1.1;
+}
+
+code {
+  font-family: Ubuntu Mono, Consolas;
+}
+
+.main-form {
+  background-color: #eee;
+  border-radius: 0.25em;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 2rem;
+  max-width: 900px;
+}
+
+input {
+  border: 1px solid silver;
+  font-size: 16px;
+  margin-bottom: 10px;
+  padding: 5px;
+  max-width: 800px;
+  width: 100%;
+}
+
+form button {
+  background-color: #bbbbf2;
+  border: 2px solid currentColor;
+  border-radius: 0.25em;
+  display: inline-block;
+  cursor: pointer;
+  font-size: inherit;
+  line-height: 1.4em;
+  padding: 0.25em 1em;
+}
+
+form button:hover {
+  background-color: lavender;
+}
+
+footer {
+  margin-top: 3em;
+  padding-top: 1.5em;
+  border-top: 1px solid lightgrey;
+}
+
+p {
+  margin-top: 0px;
+}
+
+#examples ul {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+#result {
+  display: none;
+  border: 1px solid lightgrey;
+  padding: 0.8rem 0rem;
+  border-radius: 0.25em;
+}
+
+#result form {
+  display: flex;
+  justify-content: end;
+  border-bottom: 1px solid lightgrey;
+  padding: 0rem 1rem 0.8rem;
+}
+
+#result form button {
+  background-color: #fff;
+  margin-left: .5rem;
+}
